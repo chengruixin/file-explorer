@@ -2,10 +2,22 @@ const fs = require('fs');
 const { readFile, readdir, stat } = fs;
 const path = require("path");
 const streamWriter = fs.createWriteStream('./results');
+const {findExactItems} = require("./../libs/raxSearch/raxSearch.dev").exactMatcher;
+
+// var searcher;
 
 const searchFiles = function (currentPath, searchItem) {
+
+    // if(!searcher){
+    //     searcher = findExactItems(searchItem);
+    //     console.log("once")
+    // }
+
     readdir(currentPath, (err, files) => {
-        if(err) throw err;
+        if(err) {
+            console.log(err);
+            return;
+        };
     
         for(let i = 0; i < files.length; i++) {
             let filepath = path.join(currentPath, files[i]);
@@ -31,6 +43,10 @@ const searchFiles = function (currentPath, searchItem) {
                     if(filename.toLowerCase().indexOf(searchItem) === -1) {
                         return;
                     }
+
+                    // if(searcher.findFirst(filename.toLowerCase()) === -1) {
+                    //     return;
+                    // }
 
                     streamWriter.write("name : " + files[i] + "\n");
                     streamWriter.write("path : " + filepath + "\n");
