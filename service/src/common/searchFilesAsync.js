@@ -2,12 +2,11 @@ const fs = require("fs");
 const fsPromises = fs.promises;
 const { readdir, stat } = fsPromises;
 const path = require("path");
-const streamWriter = fs.createWriteStream('./results');
-const {findExactItems} = require("../libs/raxSearch/raxSearch.dev").exactMatcher;
+const {findExactItems} = require("../../../libs/raxSearch/raxSearch.dev").exactMatcher;
 
 const hasPattern = (searcher, pattern) => searcher.findFirst(pattern.toLowerCase()) >= 0;
 
-async function searchFiles (currentPath, searchPattern) {
+async function searchFiles (currentPath, searchPattern, streamWriter) {
     try {
         const files = await readdir(currentPath);
         const stack = [];

@@ -1,4 +1,4 @@
-const searchFiles = require("./searchFilesAsync");
+const searchFiles = require("./common/searchFilesAsync");
 const path = require("path");
 const startDirectories = [
     "C:/迅雷下载",
@@ -16,6 +16,7 @@ const startDirectories = [
     "K:/迅雷下载"
 ]
 const args = process.argv;
+const streamWriter = require("fs").createWriteStream('./.results');
 
 (function main(){
     if(args.length <= 2) {
@@ -29,12 +30,13 @@ const args = process.argv;
         
         for(let i = 0; i < startDirectories.length; i++) {
             // await searchFiles(startDirectories[i], searchItem)
-            promises.push(searchFiles(startDirectories[i], searchItem))
+            promises.push(searchFiles(startDirectories[i], searchItem, streamWriter))
         }
     }
 
     Promise.all(promises).then(data=>{
         // console.log(data);
+        streamWriter.end();
         console.timeEnd("test")
     })
 })();
