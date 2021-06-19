@@ -5,7 +5,7 @@ const path = require("path");
 const streamWriter = fs.createWriteStream('./results');
 const {findExactItems} = require("../libs/raxSearch/raxSearch.dev").exactMatcher;
 
-
+const hasPattern = (searcher, pattern) => searcher.findFirst(pattern.toLowerCase()) >= 0;
 
 async function searchFiles (currentPath, searchPattern) {
     try {
@@ -40,8 +40,7 @@ async function searchFiles (currentPath, searchPattern) {
                 // if(fileName.toLowerCase().indexOf(searchPattern) === -1) {
                 //     continue;
                 // }
-
-                if(searcher.findFirst(fileName.toLowerCase()) === -1){
+                if(!hasPattern(searcher, handledFile)){
                     continue;
                 }
 
@@ -56,6 +55,7 @@ async function searchFiles (currentPath, searchPattern) {
 
     } catch (e) {
         console.log(e);
+        console.log("a")
     }
 }
 
