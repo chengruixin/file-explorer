@@ -2,17 +2,17 @@ const fs = require('fs');
 const { readFile, readdir, stat } = fs;
 const path = require("path");
 const streamWriter = fs.createWriteStream('./results');
-const {findExactItems} = require("./../libs/raxSearch/raxSearch.dev").exactMatcher;
+// const {findExactItems} = require("./../libs/raxSearch/raxSearch.dev").exactMatcher;
 
 // var searcher;
 
-const searchFiles = function (currentPath, searchItem) {
+const searchFiles = function (currentPath, searchItem, depth) {
 
     // if(!searcher){
     //     searcher = findExactItems(searchItem);
-    //     console.log("once")
+    //     // console.log("once")
     // }
-
+    
     readdir(currentPath, (err, files) => {
         if(err) {
             console.log(err);
@@ -30,13 +30,13 @@ const searchFiles = function (currentPath, searchItem) {
                 const isDir = stats.isDirectory()
     
                 if(isDir) {
-                    searchFiles(filepath, searchItem);
+                    searchFiles(filepath, searchItem, depth + 1);
                 } else {
                     const fileSize = stats.size / 1024 / 1024 / 1024;
                     const extname = path.extname(filepath);
                     const filename = files[i];
 
-                    if(extname === ".torrent" || extname === '.zip') {
+                    if(extname === ".torrent") {
                         return;
                     }
 
@@ -53,6 +53,7 @@ const searchFiles = function (currentPath, searchItem) {
                     streamWriter.write("type : " + path.extname(filepath) + "\n");
                     streamWriter.write("size : " + fileSize.toFixed(2) + " GB" + "\n\n");
 
+                   
                 }
                 
             })

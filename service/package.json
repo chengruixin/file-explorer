@@ -1,0 +1,17 @@
+{
+  "name": "service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node ./src/test.js",
+    "start": "node ./src/server.js",
+    "node-service" : "node ./src/node-main.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
