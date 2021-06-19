@@ -1,21 +1,26 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import SearchBar from './components/SearchBar';
+import Movies from './components/Movies';
 import './App.css';
 
 function App() {
 
-    useEffect(()=>{
-        fetch("/query?searchPattern=jul")
-            .then( res => {
-                console.log(res);
-                return res.text()
-            })
+    const [queryData,  setQueryData] = useState([]);
+
+    const setSearchQuery = (val) => {
+        fetch("/query?search=" + val)
+            .then(res => res.json())
             .then( data => {
-                console.log(data);
+                // console.log(data);
+                setQueryData(data);
             })
-    },[])
+    }
+
+    
     return (
         <div>
-            hello
+            <SearchBar setSearchQuery={setSearchQuery}/>
+            <Movies queryData={queryData}/>
         </div>
     )
 }
