@@ -2,7 +2,7 @@ const fs = require("fs");
 const fsPromises = fs.promises;
 const { readdir, stat } = fsPromises;
 const path = require("path");
-const {findExactItems} = require("../../../libs/raxSearch/raxSearch.dev").exactMatcher;
+const {findExactItems} = require("../../libs/raxSearch/raxSearch.dev").exactMatcher;
 
 const hasPattern = (searcher, pattern) => searcher.findFirst(pattern.toLowerCase()) >= 0;
 
