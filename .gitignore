@@ -105,5 +105,5 @@ dist
 
 # custom
 exists/
-results
+.results
 file_example

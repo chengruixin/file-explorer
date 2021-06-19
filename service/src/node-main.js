@@ -34,8 +34,14 @@ const streamWriter = require("fs").createWriteStream('./.results');
         }
     }
 
-    Promise.all(promises).then(data=>{
-        // console.log(data);
+    Promise.all(promises).then( data => {
+
+        let res = data[0];
+        for(let i = 1; i < data.length; i++){
+            res = res.concat(data[i])
+        }
+
+        console.log("Items found : ", res.length);
         streamWriter.end();
         console.timeEnd("test")
     })

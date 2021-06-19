@@ -9,26 +9,26 @@ const hasPattern = (searcher, pattern) => searcher.findFirst(pattern.toLowerCase
 async function searchFiles (currentPath, searchPattern, streamWriter) {
     try {
         const files = await readdir(currentPath);
-        const stack = [];
+        const filesStack = [];
         const searcher = findExactItems(searchPattern);
+        const matchedItems = [];
 
         for(let i = 0; i < files.length; i++){
             let filePath = path.join(currentPath, files[i]);
-            stack.push(filePath);
+            filesStack.push(filePath);
         }
        
-        while (stack.length > 0) {
-            const handledFile = stack.shift();
+        while (filesStack.length > 0) {
+            const handledFile = filesStack.shift();
             const stats = await stat(handledFile);
-
 
             if(stats.isDirectory()){
                 const files = await readdir(handledFile);
                 for(let i = 0; i < files.length; i++){
-                    stack.push(path.join(handledFile, files[i]));
+                    filesStack.push(path.join(handledFile, files[i]));
                 }
             } else {
-                const fileSize = stats.size / 1024 / 1024 / 1024;
+                const fileSize = (stats.size / 1024 / 1024 / 1024).toFixed(2) + " GB";
                 const extname = path.extname(handledFile);
                 const fileName = path.basename(handledFile)
 
@@ -43,18 +43,27 @@ async function searchFiles (currentPath, searchPattern, streamWriter) {
                     continue;
                 }
 
-                streamWriter.write("name : " + fileName + "\n");
-                streamWriter.write("path : " + handledFile + "\n");
-                streamWriter.write("type : " + extname + "\n");
-                streamWriter.write("size : " + fileSize.toFixed(2) + " GB" + "\n\n");
+                if (streamWriter) {
+                    streamWriter.write("name : " + fileName + "\n");
+                    streamWriter.write("path : " + handledFile + "\n");
+                    streamWriter.write("type : " + extname + "\n");
+                    streamWriter.write("size : " + fileSize + "\n\n");
+                }
+
+                matchedItems.push({
+                    fileName,
+                    handledFile,
+                    extname,
+                    fileSize
+                })
+                
             }
         }
 
-        return "done";
+        return matchedItems;
 
     } catch (e) {
         console.log(e);
-        console.log("a")
     }
 }
 
