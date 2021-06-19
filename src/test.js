@@ -1,12 +1,13 @@
-const {findExactItems} = require("./../libs/raxSearch/raxSearch.dev").exactMatcher;
+// const {findExactItems} = require("./../libs/raxSearch/raxSearch.dev").exactMatcher;
 
 
-const a = findExactItems("abc")
+// const a = findExactItems("abc")
 
-console.log(a)
+// console.log(a)
 
-const str = "asdfasd";
+// const str = "asdfasd";
 
-const res = a.findFirst(str)
+// const res = a.findFirst(str)
 
-console.log(res)
+// console.log(res)
+

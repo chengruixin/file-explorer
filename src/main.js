@@ -2,7 +2,9 @@
 
 
 
-const searchFiles = require("./searchFiles");
+// const searchFiles = require("./searchFiles");
+const searchFiles = require("./searchFilesAsync");
+const path = require("path");
 const startDirectories = [
     "C:/迅雷下载",
     "D:/downloads",
@@ -21,16 +23,24 @@ const startDirectories = [
 ]
 const args = process.argv;
 
-(function main(){
+(async function main(){
     if(args.length <= 2) {
         console.log("args is not enough, system quit");
         return;
     }
-
+    console.time("test")
+    let count = 0;
     for(let i = 2; i < args.length; i++){
         const searchItem = args[i];
         for(let i = 0; i < startDirectories.length; i++) {
-            searchFiles(startDirectories[i], searchItem);
+            // await searchFiles(startDirectories[i], searchItem)
+            searchFiles(startDirectories[i], searchItem).then(()=>{
+                count++;
+                if(count === startDirectories.length - 1){
+                    console.timeEnd("test")
+                }
+            })
+
         }
     }
 })();
