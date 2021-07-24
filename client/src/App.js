@@ -1,28 +1,28 @@
-import { useEffect, useState } from 'react';
-import SearchBar from './components/SearchBar';
-import Movies from './components/Movies';
-import './App.css';
+import { useEffect, useState } from 'react'
+import NavBar from './components/NavBar'
+import MainRoute from './components/MainRoute'
+import IndexContext from './context'
+import './App.css'
 
 function App() {
-
-    const [queryData,  setQueryData] = useState([]);
-
+    const [queryData, setQueryData] = useState([])
     const setSearchQuery = (val) => {
-        fetch("/query?search=" + val)
-            .then(res => res.json())
-            .then( data => {
+        fetch('/query?search=' + val)
+            .then((res) => res.json())
+            .then((data) => {
                 // console.log(data);
-                setQueryData(data);
+                setQueryData(data)
             })
     }
 
-    
     return (
-        <div>
-            <SearchBar setSearchQuery={setSearchQuery}/>
-            <Movies queryData={queryData}/>
-        </div>
+        <IndexContext>
+            <NavBar setSearchQuery={setSearchQuery} />
+            <main>
+                <MainRoute />
+            </main>
+        </IndexContext>
     )
 }
 
-export default App;
+export default App
