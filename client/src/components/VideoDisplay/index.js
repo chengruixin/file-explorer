@@ -23,10 +23,6 @@ export default function VideoDisplay() {
     const history = useHistory()
     const classes = useStyles()
 
-    useEffect(() => {
-        console.log(videoInfo)
-    }, [])
-
     return (
         <Container>
             <main>
@@ -61,7 +57,7 @@ export default function VideoDisplay() {
                 <Box className={classes.description}>
                     <Typography
                         variant="span"
-                        className={[classes.shallowText, classes.flexGrow]}
+                        className={classes.shallowText + ' ' + classes.flexGrow}
                     >
                         {location}
                     </Typography>

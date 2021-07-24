@@ -20,9 +20,7 @@ function App() {
         <IndexContext>
             <Router>
                 <NavBar setSearchQuery={setSearchQuery} />
-                <main>
-                    <MainRoute />
-                </main>
+                <MainRoute />
             </Router>
         </IndexContext>
     )
