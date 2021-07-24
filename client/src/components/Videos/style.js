@@ -1,9 +1,10 @@
 import { makeStyles } from '@material-ui/core/styles'
 
 export const useStyles = makeStyles((theme) => ({
-    root: {
+    cardBox: {
         width: 350,
         margin: theme.spacing(2),
+        cursor: 'pointer',
     },
     media: {
         height: 0,
@@ -22,7 +23,6 @@ export const useStyles = makeStyles((theme) => ({
     ul: {
         display: 'flex',
         flexWrap: 'wrap',
-        justifyContent: 'center',
         alignItems: 'stretch',
     },
 }))

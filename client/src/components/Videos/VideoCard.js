@@ -7,6 +7,7 @@ import {
     Typography,
     CardActions,
     IconButton,
+    Button,
 } from '@material-ui/core'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import ShareIcon from '@material-ui/icons/Share'
@@ -21,10 +22,10 @@ export default function VideoCard({ information, setPlayURL }) {
     const classes = useStyles()
     const { handledFile, fileSize } = information
     let { fileName } = information
-    fileName =
-        fileName.length > maxFileNameLength
-            ? fileName.substring(0, maxFileNameLength)
-            : fileName
+    // fileName =
+    //     fileName.length > maxFileNameLength
+    //         ? fileName.substring(0, maxFileNameLength)
+    //         : fileName
     const requestURL = `http://localhost:8080/videos?location=${handledFile}`
     const [videoInfo, setVideoInfo] = useVideoInfo()
 
@@ -36,11 +37,20 @@ export default function VideoCard({ information, setPlayURL }) {
             fileSize: fileSize,
         })
         history.push('/video')
+        // console.log('clicked on card')
     }
 
+    const onAddingToFavorites = (e) => {
+        e.stopPropagation()
+        console.log('clicked on favorites')
+    }
+    const onSharing = (e) => {
+        e.stopPropagation()
+        console.log('clicked on sharing')
+    }
     return (
-        <Card className={classes.root}>
-            <CardHeader
+        <Card className={classes.cardBox} onClick={onPlay}>
+            {/* <CardHeader
                 title={fileName}
                 subheader={fileSize}
                 action={
@@ -48,22 +58,31 @@ export default function VideoCard({ information, setPlayURL }) {
                         <PlayCircleOutlineIcon fontSize="large" />
                     </IconButton>
                 }
-            />
-            <CardMedia
-                className={classes.media}
-                image="logo192.png"
-                title="place-holder"
-            />
+            /> */}
+
+            {/* <CardMedia
+                    className={classes.media}
+                    image="logo192.png"
+                    title="place-holder"
+                /> */}
             <CardContent>
+                <Typography variant="h6" color="textPrimary" component="h2">
+                    {fileName}
+                </Typography>
+
                 <Typography variant="body2" color="textSecondary" component="p">
-                    {handledFile}
+                    {fileSize}
                 </Typography>
             </CardContent>
+
             <CardActions disableSpacing>
-                <IconButton aria-label="add to favorites">
+                <IconButton
+                    aria-label="add to favorites"
+                    onClick={onAddingToFavorites}
+                >
                     <FavoriteIcon />
                 </IconButton>
-                <IconButton aria-label="share">
+                <IconButton aria-label="share" onClick={onSharing}>
                     <ShareIcon />
                 </IconButton>
             </CardActions>
