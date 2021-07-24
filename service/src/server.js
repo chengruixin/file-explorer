@@ -32,20 +32,40 @@ app.get('/query', (req, res) => {
 
 
 app.get('/videos', (req, res) => {
-    const { location } = req.query;
+    console.log("requested")
+    const { location : videoPath } = req.query;
+    const range = req.headers.range;
+    const videoSize = fs.statSync(videoPath).size;
 
-    const videoStream = fs.createReadStream(location);
-    res.setHeader("Content-Type", "video/mp4");
-    videoStream.on("data", data => {
-        // console.log(data);
-        // console.log(typeof data);
-        res.write(data);
-    });
+    const chunkSize = 1 * 1e+6;
+    const start = Number(range.replace(/\D/g, ''));
+    const end = Math.min(start + chunkSize, videoSize - 1);
 
-    videoStream.on("end", () => {
-        console.log("end");
-        res.end();
-    })
+    const contentLength = end - start + 1;
+
+    const headers = {
+        "Content-Range" : `bytes ${start}-${end}/${videoSize}`,
+        "Accept-Ranges" : "bytes",
+        "Content-Length" : contentLength,
+        "Content-Type" : "video/mp4"
+    }
+
+    res.writeHead(206, headers);
+
+    const stream = fs.createReadStream(videoPath, {start, end});
+    stream.pipe(res);
+    // const videoStream = fs.createReadStream(location);
+    // res.setHeader("Content-Type", "video/mp4");
+    // videoStream.on("data", data => {
+    //     // console.log(data);
+    //     // console.log(typeof data);
+    //     res.write(data);
+    // });
+
+    // videoStream.on("end", () => {
+    //     console.log("end");
+    //     res.end();
+    // })
 
 })
 app.listen(port, () => {
