@@ -12,7 +12,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite'
 import ShareIcon from '@material-ui/icons/Share'
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline'
 import { useStyles } from './style'
-import { useVideoURL } from '../../context'
+import { useVideoInfo } from '../../context'
 import { useHistory } from 'react-router'
 
 export default function VideoCard({ information, setPlayURL }) {
@@ -26,16 +26,17 @@ export default function VideoCard({ information, setPlayURL }) {
             ? fileName.substring(0, maxFileNameLength)
             : fileName
     const requestURL = `http://localhost:8080/videos?location=${handledFile}`
-    const [videoURL, setVideoURL] = useVideoURL()
+    const [videoInfo, setVideoInfo] = useVideoInfo()
 
     const onPlay = () => {
-        setVideoURL(requestURL)
+        setVideoInfo({
+            url: requestURL,
+            fileName: information.fileName,
+            location: handledFile,
+            fileSize: fileSize,
+        })
         history.push('/video')
     }
-
-    useEffect(() => {
-        console.log(videoURL)
-    }, [videoURL])
 
     return (
         <Card className={classes.root}>

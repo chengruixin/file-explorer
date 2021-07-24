@@ -1,19 +1,19 @@
 import React, { useEffect, useState, useContext } from 'react'
 
 const QueryDataContext = React.createContext()
-const VideoURLContext = React.createContext()
+const VideoInfoContext = React.createContext()
 export const useQueryData = () => useContext(QueryDataContext)
-export const useVideoURL = () => useContext(VideoURLContext)
+export const useVideoInfo = () => useContext(VideoInfoContext)
 
 export default function IndexContext({ children }) {
     const [queryData, setQueryData] = useState([])
-    const [videoURL, setVideoURL] = useState(null)
-
+    const [videoInfo, setVideoInfo] = useState({})
+    
     return (
         <QueryDataContext.Provider value={[queryData, setQueryData]}>
-            <VideoURLContext.Provider value={[videoURL, setVideoURL]}>
+            <VideoInfoContext.Provider value={[videoInfo, setVideoInfo]}>
                 {children}
-            </VideoURLContext.Provider>
+            </VideoInfoContext.Provider>
         </QueryDataContext.Provider>
     )
 }
