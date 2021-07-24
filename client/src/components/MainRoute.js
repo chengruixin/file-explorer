@@ -1,15 +1,13 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import Videos from './Videos'
-import PlayVideo from './PlayVideo'
+import VideoDisplay from './VideoDisplay'
 
 function MainRoute() {
     return (
-        <Router>
-            <Switch>
-                <Route exact path="/" component={Videos} />
-                {/* <Route path="/video" component={PlayVideo}/> */}
-            </Switch>
-        </Router>
+        <Switch>
+            <Route exact path="/" component={Videos} />
+            <Route path="/video" component={VideoDisplay} />
+        </Switch>
     )
 }
 

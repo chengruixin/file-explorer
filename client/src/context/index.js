@@ -1,14 +1,19 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react'
 
 const QueryDataContext = React.createContext()
-export const useQueryDataContext = () => useContext(QueryDataContext);
+const VideoURLContext = React.createContext()
+export const useQueryData = () => useContext(QueryDataContext)
+export const useVideoURL = () => useContext(VideoURLContext)
 
-export default function IndexContext({children}){
-    const [queryData, setQueryData] = useState([]);
+export default function IndexContext({ children }) {
+    const [queryData, setQueryData] = useState([])
+    const [videoURL, setVideoURL] = useState(null)
 
     return (
         <QueryDataContext.Provider value={[queryData, setQueryData]}>
-            {children}
+            <VideoURLContext.Provider value={[videoURL, setVideoURL]}>
+                {children}
+            </VideoURLContext.Provider>
         </QueryDataContext.Provider>
     )
 }

@@ -8,8 +8,9 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import SearchIcon from '@material-ui/icons/Search'
-import { useQueryDataContext } from '../context'
+import { useQueryData } from '../context'
 import { fetchVideos } from '../services'
+import { useHistory, useRouteMatch } from 'react-router'
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -35,25 +36,35 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function NavBar({ setSearchQuery, test }) {
+export default function NavBar() {
     const classes = useStyles()
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar className={classes.toolBar}>
-                <SearchInput setSearchQuery={setSearchQuery} />
+                <SearchInput />
             </Toolbar>
         </AppBar>
     )
 }
 
-function SearchInput({ setSearchQuery }) {
+function SearchInput() {
     const classes = useStyles()
-    const [_, setQueryData] = useQueryDataContext()
-
+    const [_, setQueryData] = useQueryData()
+    const history = useHistory()
+    const { isExact } = useRouteMatch()
     const handleOnSearchClick = async () => {
         const searchValue = document.querySelector('#search').value
+
+        if(!searchValue || searchValue.length === 0) {
+            console.log("stoped");
+            return;
+        }
         const videos = await fetchVideos(searchValue)
         setQueryData(videos)
+
+        if(!isExact) {
+            history.push("/")
+        }
     }
     return (
         <Paper component="div" className={classes.paperWrapper}>

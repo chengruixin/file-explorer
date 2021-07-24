@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import NavBar from './components/NavBar'
 import MainRoute from './components/MainRoute'
 import IndexContext from './context'
@@ -17,10 +18,12 @@ function App() {
 
     return (
         <IndexContext>
-            <NavBar setSearchQuery={setSearchQuery} />
-            <main>
-                <MainRoute />
-            </main>
+            <Router>
+                <NavBar setSearchQuery={setSearchQuery} />
+                <main>
+                    <MainRoute />
+                </main>
+            </Router>
         </IndexContext>
     )
 }
