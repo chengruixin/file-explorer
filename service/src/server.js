@@ -102,8 +102,8 @@ app.listen(HTTP_PORT, () => {
 })
 
 const options = {
-    key: fs.readFileSync(path.join(__dirname, './certs/server.key')),
-    cert: fs.readFileSync(path.join(__dirname, './certs/server.cert')),
+    key: fs.readFileSync(path.join(__dirname, '../.certs/server.key')),
+    cert: fs.readFileSync(path.join(__dirname, '../.certs/server.cert')),
 }
 
 spdy.createServer(options, app).listen(HTTPS_PORT, () => {
