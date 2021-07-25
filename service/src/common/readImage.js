@@ -1,5 +1,5 @@
 const fs = require('fs')
-const s = fs.createReadStream('../../assets/out.png')
+const s = fs.createReadStream('../assets/out.png')
 
 s.on('open', () => {
     console.log('file is open');

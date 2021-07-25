@@ -18,6 +18,7 @@ function App() {
 
     return (
         <IndexContext>
+            {/* <img src="https://localhost:8443/image"></img> */}
             <Router>
                 <NavBar setSearchQuery={setSearchQuery} />
                 <MainRoute />
