@@ -4,7 +4,8 @@ const fs = require("fs");
 const port = 8080;
 const searchFiles = require("./common/searchFilesAsync");
 const directoriesToBeExplored = require("./data/dirsTobeExplored");
-
+const spdy = require('spdy')
+const path = require('path')
 // app.use((req, res, next) => {
 //     res.setHeader("Access-Control-Allow-Origin", "*");
 //     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild");
@@ -32,7 +33,6 @@ app.get('/query', (req, res) => {
 
 
 app.get('/videos', (req, res) => {
-    console.log("requested")
     const { location : videoPath } = req.query;
     const range = req.headers.range;
     const videoSize = fs.statSync(videoPath).size;
@@ -68,6 +68,15 @@ app.get('/videos', (req, res) => {
     // })
 
 })
-app.listen(port, () => {
-    console.log("Listening on port " + port);
-})
+
+// app.listen(port, () => {
+//     console.log("Listening on port " + port);
+// })
+
+const options = {
+    key: fs.readFileSync(__dirname + '\\server.key'),
+    cert : fs.readFileSync(__dirname + '\\server.cert')
+}
+
+spdy.createServer(options, app).listen(port);
+// const k = fs.readFileSync(__dirname + '\\server.key')
