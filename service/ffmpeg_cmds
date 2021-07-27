@@ -4,3 +4,4 @@ ffmpeg -i video.mp4 -vframes 1 -s 320x180 -ss `ffmpeg -i video.mp4 2>&1 | grep D
 ffmpeg -i video.mp4 -vframes 1 -s 320x180 -ss <duration> output.png
 
 ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 video.mp4
+ffmpeg -skip_frame nokey -i my-film.mp4 -vsync 0 -f image2 myfilm/my-film-%06d.png
