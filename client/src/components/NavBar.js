@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import ReactDom from 'react-dom'
 import {
     Paper,
     InputBase,
@@ -57,6 +58,9 @@ function SearchInput() {
     const history = useHistory()
     const { isExact } = useRouteMatch()
     const [isSearching, setIsSearching] = useState(false)
+
+    const [debug, setDebug] = useState(null);
+
     const handleOnSearchClick = async () => {
         try {
             if (isSearching) {
@@ -80,8 +84,13 @@ function SearchInput() {
             setIsSearching(false)
         } catch (err) {
             setIsSearching(false)
+            setDebug(JSON.stringify(err));
             console.log(err)
         }
+    }
+
+    if(debug) {
+        return ReactDom.createPortal(<div>{debug}</div>, document.querySelector("#debug"));
     }
     return (
         <Paper component="div" className={classes.paperWrapper}>
