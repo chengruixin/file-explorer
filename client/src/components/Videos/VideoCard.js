@@ -26,7 +26,9 @@ export default function VideoCard({ information, setPlayURL }) {
     //     fileName.length > maxFileNameLength
     //         ? fileName.substring(0, maxFileNameLength)
     //         : fileName
-    const requestURL = `https://localhost:8443/videos?location=${handledFile}`
+    // const requestURL = `https://localhost:8443/videos?location=${handledFile}`
+    const requestURL = `http://localhost:8080/videos?location=${handledFile}`
+
     const [videoInfo, setVideoInfo] = useVideoInfo()
 
     const onPlay = () => {

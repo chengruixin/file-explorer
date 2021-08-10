@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         width: 400,
-        height : 30
+        height: 30,
     },
     toolBar: {
         display: 'flex',
@@ -58,24 +58,30 @@ function SearchInput() {
     const { isExact } = useRouteMatch()
     const [isSearching, setIsSearching] = useState(false)
     const handleOnSearchClick = async () => {
-        if (isSearching) {
-            return
-        }
-        console.log('triggered')
-        setIsSearching(true)
-        const searchValue = document.querySelector('#search').value
+        try {
+            if (isSearching) {
+                return
+            }
+            console.log('triggered')
+            setIsSearching(true)
+            const searchValue = document.querySelector('#search').value
 
-        if (!searchValue || searchValue.length === 0) {
-            console.log('stoped')
-            return
-        }
-        const videos = await fetchVideos(searchValue)
-        setQueryData(videos)
+            if (!searchValue || searchValue.length === 0) {
+                console.log('stoped')
+                return
+            }
+            const { data } = await fetchVideos(searchValue)
 
-        if (!isExact) {
-            history.push('/')
+            setQueryData(data)
+
+            if (!isExact) {
+                history.push('/')
+            }
+            setIsSearching(false)
+        } catch (err) {
+            setIsSearching(false)
+            console.log(err)
         }
-        setIsSearching(false)
     }
     return (
         <Paper component="div" className={classes.paperWrapper}>
@@ -96,8 +102,13 @@ function SearchInput() {
                 className={classes.iconButton}
                 aria-label="search"
                 onClick={handleOnSearchClick}
+                disabled={isSearching}
             >
-                {isSearching ? <CircularProgress size={18} /> : <SearchIcon style={{ fontSize : 18}} />}
+                {isSearching ? (
+                    <CircularProgress size={18} />
+                ) : (
+                    <SearchIcon style={{ fontSize: 18 }} />
+                )}
                 {/* <SearchIcon />
                 <CircularProgress size={20} /> */}
             </IconButton>

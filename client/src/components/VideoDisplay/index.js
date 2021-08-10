@@ -56,7 +56,6 @@ export default function VideoDisplay() {
                 <Divider light />
                 <Box className={classes.description}>
                     <Typography
-                        variant="span"
                         className={classes.shallowText + ' ' + classes.flexGrow}
                     >
                         {location}
