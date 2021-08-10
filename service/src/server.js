@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 
 app.get('/query', (req, res) => {
     const { search } = req.query
-
+    console.log('\nSearching:', search)
     if (!search) {
         res.json([])
         console.log('return')
@@ -73,28 +73,6 @@ app.get('/image', (req, res) => {
         res.setHeader('Content-Type', 'text/plain')
         res.status(404).end('Not found')
     })
-
-    // const s = fs.createReadStream('./src/assets/out.png')
-
-    // s.on('open', () => {
-    //     console.log('file is open')
-    // })
-
-    // s.on('error', (err) => {
-    //     console.log(err)
-    // })
-
-    // s.on('data', (chunk) => {
-    //     console.log('\nchunk data : \n', chunk)
-    // })
-
-    // s.on('close', () => {
-    //     console.log('close')
-    // })
-
-    // s.on('end', () => {
-    //     console.log('end')
-    // })
 })
 
 app.listen(HTTP_PORT, () => {
