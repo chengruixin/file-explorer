@@ -18,11 +18,10 @@ function App() {
 
     return (
         <IndexContext>
+            {/* <img src="https://localhost:8443/image"></img> */}
             <Router>
                 <NavBar setSearchQuery={setSearchQuery} />
-                <main>
-                    <MainRoute />
-                </main>
+                <MainRoute />
             </Router>
         </IndexContext>
     )
