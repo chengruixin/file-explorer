@@ -2,8 +2,10 @@ import axios from 'axios'
 
 export const fetchVideos = async (val) => {
     try {
-        const res = await axios.get('http://localhost:8080/query?search=' + val) // incorrect
+        const res = await axios.get('/query?search=' + val) // incorrect
         // const res = await axios.get('http://localhost:8080/query?search=' + val) // correct
+        
+        console.log("f");
         return res;
 
         //https : https://localhost:8443/query?search=
