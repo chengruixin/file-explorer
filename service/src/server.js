@@ -36,10 +36,11 @@ app.get('/query', (req, res) => {
 })
 
 app.get('/videos', (req, res) => {
+    console.log("red")
     const { location: videoPath } = req.query
     const range = req.headers.range
     const videoSize = fs.statSync(videoPath).size
-
+    console.log(range);
     const chunkSize = 1 * 1e6
     const start = Number(range.replace(/\D/g, ''))
     const end = Math.min(start + chunkSize, videoSize - 1)
