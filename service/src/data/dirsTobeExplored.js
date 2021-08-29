@@ -1,5 +1,4 @@
 module.exports = [
-    "C:/迅雷下载",
     "D:/downloads",
     "D:/Games",
     "D:/intermediate",

@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core'
 import { useVideoInfo } from '../../context'
 import { useStyles } from './style'
+import Player from './Player'
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder'
@@ -26,17 +27,7 @@ export default function VideoDisplay() {
     return (
         <Container>
             <main>
-                <video
-                    className={classes.verticalMargin}
-                    style={{
-                        width: '100%',
-                    }}
-                    controls={true}
-                    playsInline
-                    type="video/mp4"
-                    autoPlay
-                    src={url}
-                ></video>
+                <Player url={url} />
 
                 <Typography variant="h6" component="h1">
                     {fileName}
