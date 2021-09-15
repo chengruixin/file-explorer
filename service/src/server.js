@@ -8,15 +8,15 @@ const spdy = require('spdy')
 const path = require('path')
 const app = express()
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild'
-    )
-    res.setHeader('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
-    next()
-})
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*')
+//     // res.setHeader(
+//     //     'Access-Control-Allow-Headers',
+//     //     'Content-Type, Content-Length, Authorization, Accept, X-Requested-With, Range, range'
+//     // )
+//     res.setHeader('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
+//     next()
+// })
 
 app.get('/query', (req, res) => {
     const { search } = req.query
@@ -36,17 +36,25 @@ app.get('/query', (req, res) => {
 })
 
 app.get('/videos', (req, res) => {
-    console.log("red")
     const { location: videoPath } = req.query
+    // const videoPath = 'D:/downloads/JUY833/JUY833.mp4'
     const range = req.headers.range
     const videoSize = fs.statSync(videoPath).size
-    console.log(range);
-    const chunkSize = 1 * 1e6
-    const start = Number(range.replace(/\D/g, ''))
-    const end = Math.min(start + chunkSize, videoSize - 1)
+    console.log(req.headers.range)
+
+    const parts = range.replace(/bytes=/, '').split('-')
+    const start = parseInt(parts[0], 10)
+    const end = parts[1] ? parseInt(parts[1], 10) : videoSize - 1
+
+    if (start >= videoSize) {
+        res.status(416).send(
+            'Requested range not satisfiable\n' + start + ' >= ' + videoSize
+        )
+        return
+    }
 
     const contentLength = end - start + 1
-
+    const file = fs.createReadStream(videoPath, { start, end })
     const headers = {
         'Content-Range': `bytes ${start}-${end}/${videoSize}`,
         'Accept-Ranges': 'bytes',
@@ -55,9 +63,7 @@ app.get('/videos', (req, res) => {
     }
 
     res.writeHead(206, headers)
-
-    const stream = fs.createReadStream(videoPath, { start, end })
-    stream.pipe(res)
+    file.pipe(res)
 })
 
 app.get('/image', (req, res) => {

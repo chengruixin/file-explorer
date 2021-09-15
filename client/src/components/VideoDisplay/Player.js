@@ -7,14 +7,20 @@ const videoProgressChange = 3
 export default function Player({ url }) {
     const classes = useStyles()
     const videoRef = useRef()
-
+    let timer
     const handleEvents = (e) => {
         e.preventDefault()
         const { keyCode } = e
         if (keyCode === 37) {
             videoRef.current.currentTime -= videoProgressChange
         } else if (keyCode === 39) {
-            videoRef.current.currentTime += videoProgressChange
+            if (!timer) {
+                videoRef.current.playbackRate = 8
+                timer = setTimeout(() => {
+                    videoRef.current.playbackRate = 1
+                    timer = null
+                }, 500)
+            }
         } else if (keyCode === 38) {
             const currentVolume = videoRef.current.volume
 
@@ -52,13 +58,10 @@ export default function Player({ url }) {
             }}
             controls
             autoPlay
-            crossOrigin
             onKeyDownCapture={handleEvents}
             ref={videoRef}
         >
             <source src={url} type="video/mp4" />
-            <source src={url} type="video/webm" />
-            <p>not supported</p>
         </video>
     )
 }
