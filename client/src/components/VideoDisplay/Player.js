@@ -16,7 +16,6 @@ export default function Player({ url }) {
         } else if (keyCode === 39) {
             if (!timer) {
                 videoRef.current.playbackRate = 8
-                console.log(1);
                 timer = setTimeout(() => {
                     videoRef.current.playbackRate = 1
                     timer = null
@@ -59,13 +58,10 @@ export default function Player({ url }) {
             }}
             controls
             autoPlay
-            crossOrigin
             onKeyDownCapture={handleEvents}
             ref={videoRef}
         >
             <source src={url} type="video/mp4" />
-            <source src={url} type="video/webm" />
-            <p>not supported</p>
         </video>
     )
 }
