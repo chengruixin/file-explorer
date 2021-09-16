@@ -3,7 +3,8 @@ const fs = require('fs')
 const HTTP_PORT = 8080
 const HTTPS_PORT = 8443
 const searchFiles = require('./common/searchFilesAsync')
-const directoriesToBeExplored = require('./data/dirsTobeExplored')
+const { findMovies } = require('./common/MongoDriver')
+const directoriesToBeExplored = require('./data/DirsTobeExplored')
 const spdy = require('spdy')
 const path = require('path')
 const app = express()
@@ -18,7 +19,7 @@ const app = express()
 //     next()
 // })
 
-app.get('/query', (req, res) => {
+app.get('/query', async (req, res) => {
     const { search } = req.query
     console.log('\nSearching:', search)
     if (!search) {
@@ -28,11 +29,11 @@ app.get('/query', (req, res) => {
     }
 
     console.time('Processing Time')
-    searchFiles(directoriesToBeExplored, search.split(' ')).then((data) => {
-        console.log(data.length)
-        console.timeEnd('Processing Time')
-        res.json(data)
-    })
+    const movies = await findMovies(search.split(' '))
+
+    console.log(movies.length)
+    console.timeEnd('Processing Time')
+    res.json(movies)
 })
 
 app.get('/videos', (req, res) => {

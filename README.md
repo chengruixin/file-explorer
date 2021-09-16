@@ -6,5 +6,5 @@ todos
 [2]. add favorties and watch later
 [2]. navbar sticky
 [3]. modify player outlook
-[1]. add mongodb
-[1]. search input case problem
+[1]. add mongodb done
+[1]. search input case problem DONE1
