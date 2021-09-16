@@ -1,7 +1,11 @@
-let array = [];
+const searchFiles = require('./common/searchFilesAsync')
+const dirs = require('./data/dirsTobeExplored')
+const { findExactItems } =
+    require('../libs/raxSearch/raxSearch.dev').exactMatcher
 
-let added = [3, 4, 5];
-
-let newarr = array.concat(added);
-
-console.log(newarr);
+console.log(dirs);
+searchFiles(dirs, []).then( data => {
+    console.log(data.length);
+}).catch( err => {
+    console.log(err)
+})

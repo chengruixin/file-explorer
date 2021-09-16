@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.17.1",
+    "mongodb": "^4.1.2",
     "spdy": "^4.0.2"
   },
   "devDependencies": {},
