@@ -2,7 +2,7 @@
 
 todos
 
-[1]. add routes to video playing
+[1 DONE]. add routes to video playing
 [1]. left and right control to-be-played list
 [2]. add favorties and watch later
 [2]. double right arrow to speed up
