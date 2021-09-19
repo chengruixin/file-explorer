@@ -59,7 +59,18 @@ async function findMovies(arr) {
     }
 }
 
+async function findMovieWithID(id) {
+    try {
+        await client.connect()
+        const db = client.db(dbName)
+        const movies = db.collection(collectionName)
+        return await movies.findOne({ _id: id })
+    } finally {
+        await client.close()
+    }
+}
 module.exports = {
     findMovies,
     refreshDatabase,
+    findMovieWithID,
 }

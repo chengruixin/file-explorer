@@ -1,26 +1,22 @@
 import React, { useState } from 'react'
 import { Container } from '@material-ui/core'
 import './index.css'
-import { useQueryData } from '../../context'
 import VideoCard from './VideoCard'
 import { useStyles } from './style'
+import { useLocation } from 'react-router'
 
 function Videos() {
-    const [palyURL, setPlayURL] = useState(null)
-    const [queryData] = useQueryData()
+    const { state } = useLocation()
     const classes = useStyles()
-
+    console.log(state)
     return (
         <>
             <Container maxWidth="lg">
                 <ul className={classes.ul}>
-                    {queryData.map((item, key) => (
-                        <VideoCard
-                            information={item}
-                            key={key}
-                            setPlayURL={setPlayURL}
-                        />
-                    ))}
+                    {state &&
+                        state.map((item) => (
+                            <VideoCard information={item} key={item._id} />
+                        ))}
                 </ul>
             </Container>
         </>

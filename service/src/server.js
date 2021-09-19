@@ -3,7 +3,7 @@ const fs = require('fs')
 const HTTP_PORT = 8080
 const HTTPS_PORT = 8443
 const searchFiles = require('./common/searchFilesAsync')
-const { findMovies } = require('./common/MongoDriver')
+const { findMovies, findMovieWithID } = require('./common/MongoDriver')
 const directoriesToBeExplored = require('./data/DirsTobeExplored')
 const spdy = require('spdy')
 const path = require('path')
@@ -36,8 +36,10 @@ app.get('/query', async (req, res) => {
     res.json(movies)
 })
 
-app.get('/videos', (req, res) => {
-    const { location: videoPath } = req.query
+app.get('/videos/:id', async (req, res) => {
+    const {id} = req.params
+    const movie = await findMovieWithID(Number(id));
+    const { handledFile: videoPath } = movie
     // const videoPath = 'D:/downloads/JUY833/JUY833.mp4'
     const range = req.headers.range
     const videoSize = fs.statSync(videoPath).size

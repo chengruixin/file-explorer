@@ -16,32 +16,13 @@ import { useStyles } from './style'
 import { useVideoInfo } from '../../context'
 import { useHistory } from 'react-router'
 
-export default function VideoCard({ information, setPlayURL }) {
-    const history = useHistory()
-    const maxFileNameLength = 16
+export default function VideoCard({ information }) {
     const classes = useStyles()
-    const { handledFile, fileSize } = information
-    let { fileName } = information
-    // fileName =
-    //     fileName.length > maxFileNameLength
-    //         ? fileName.substring(0, maxFileNameLength)
-    //         : fileName
-    // const requestURL = `https://localhost:8443/videos?location=${handledFile}`
-    const requestURL = `/videos?location=${handledFile}`
-    // const requestURL = `/videos`
-
-    
-    const [videoInfo, setVideoInfo] = useVideoInfo()
+    const history = useHistory()
+    const { fileSize, fileName, _id } = information
 
     const onPlay = () => {
-        setVideoInfo({
-            url: requestURL,
-            fileName: information.fileName,
-            location: handledFile,
-            fileSize: fileSize,
-        })
-        history.push('/video')
-        // console.log('clicked on card')
+        history.push(`/videos/${_id}`, information)
     }
 
     const onAddingToFavorites = (e) => {
@@ -54,21 +35,6 @@ export default function VideoCard({ information, setPlayURL }) {
     }
     return (
         <Card className={classes.cardBox} onClick={onPlay}>
-            {/* <CardHeader
-                title={fileName}
-                subheader={fileSize}
-                action={
-                    <IconButton aria-label="watch video" onClick={onPlay}>
-                        <PlayCircleOutlineIcon fontSize="large" />
-                    </IconButton>
-                }
-            /> */}
-
-            {/* <CardMedia
-                    className={classes.media}
-                    image="logo192.png"
-                    title="place-holder"
-                /> */}
             <CardContent>
                 <Typography variant="h6" color="textPrimary" component="h2">
                     {fileName}
