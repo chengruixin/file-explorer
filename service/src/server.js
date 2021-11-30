@@ -2,11 +2,16 @@ const express = require('express')
 const fs = require('fs')
 const HTTP_PORT = 8080
 const HTTPS_PORT = 8443
-const searchFiles = require('./common/searchFilesAsync')
-const directoriesToBeExplored = require('./data/dirsTobeExplored')
+const { findMovies, findMovieWithID } = require('./common/MongoDriver')
+const { createMapWithCache } = require('./common/cache')
 const spdy = require('spdy')
 const path = require('path')
 const app = express()
+const videoIDCache = createMapWithCache()
+const options = {
+    key: fs.readFileSync(path.join(__dirname, '../.certs/server.key')),
+    cert: fs.readFileSync(path.join(__dirname, '../.certs/server.cert')),
+}
 
 // app.use((req, res, next) => {
 //     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -18,7 +23,7 @@ const app = express()
 //     next()
 // })
 
-app.get('/query', (req, res) => {
+app.get('/query', async (req, res) => {
     const { search } = req.query
     console.log('\nSearching:', search)
     if (!search) {
@@ -27,43 +32,54 @@ app.get('/query', (req, res) => {
         return
     }
 
-    console.time('Processing Time')
-    searchFiles(directoriesToBeExplored, search.split(' ')).then((data) => {
-        console.log(data.length)
-        console.timeEnd('Processing Time')
-        res.json(data)
-    })
+    const movies = await findMovies(search.split(' '))
+    console.info(movies.length)
+    res.json(movies)
 })
 
-app.get('/videos', (req, res) => {
-    const { location: videoPath } = req.query
-    // const videoPath = 'D:/downloads/JUY833/JUY833.mp4'
-    const range = req.headers.range
-    const videoSize = fs.statSync(videoPath).size
-    console.log(req.headers.range)
+app.get('/videos/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        const searchKey = Number(id)
+        const movie = videoIDCache.has(searchKey)
+            ? videoIDCache.get(searchKey)
+            : await (async () => {
+                  // if cache does not key, fetch it from db and save it to cache.
+                  const res = await findMovieWithID(searchKey)
+                  videoIDCache.set(searchKey, res)
+                  return res
+              })()
+        const { handledFile: videoPath } = movie
+        // const videoPath = 'D:/downloads/JUY833/JUY833.mp4'
+        const range = req.headers.range
+        const videoSize = fs.statSync(videoPath).size
+        console.log(req.headers.range)
 
-    const parts = range.replace(/bytes=/, '').split('-')
-    const start = parseInt(parts[0], 10)
-    const end = parts[1] ? parseInt(parts[1], 10) : videoSize - 1
+        const parts = range.replace(/bytes=/, '').split('-')
+        const start = parseInt(parts[0], 10)
+        const end = parts[1] ? parseInt(parts[1], 10) : videoSize - 1
 
-    if (start >= videoSize) {
-        res.status(416).send(
-            'Requested range not satisfiable\n' + start + ' >= ' + videoSize
-        )
-        return
+        if (start >= videoSize) {
+            res.status(416).send(
+                'Requested range not satisfiable\n' + start + ' >= ' + videoSize
+            )
+            return
+        }
+
+        const contentLength = end - start + 1
+        const file = fs.createReadStream(videoPath, { start, end })
+        const headers = {
+            'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': contentLength,
+            'Content-Type': 'video/mp4',
+        }
+
+        res.writeHead(206, headers)
+        file.pipe(res)
+    } catch (e) {
+        console.error('Catched Error:\n', e)
     }
-
-    const contentLength = end - start + 1
-    const file = fs.createReadStream(videoPath, { start, end })
-    const headers = {
-        'Content-Range': `bytes ${start}-${end}/${videoSize}`,
-        'Accept-Ranges': 'bytes',
-        'Content-Length': contentLength,
-        'Content-Type': 'video/mp4',
-    }
-
-    res.writeHead(206, headers)
-    file.pipe(res)
 })
 
 app.get('/image', (req, res) => {
@@ -85,11 +101,6 @@ app.get('/image', (req, res) => {
 app.listen(HTTP_PORT, () => {
     console.log(`Http  open on port ${HTTP_PORT}`)
 })
-
-const options = {
-    key: fs.readFileSync(path.join(__dirname, '../.certs/server.key')),
-    cert: fs.readFileSync(path.join(__dirname, '../.certs/server.cert')),
-}
 
 spdy.createServer(options, app).listen(HTTPS_PORT, () => {
     console.log(`Https  open on port ${HTTPS_PORT}`)

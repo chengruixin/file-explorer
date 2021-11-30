@@ -11,7 +11,6 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import SearchIcon from '@material-ui/icons/Search'
-import { useQueryData } from '../context'
 import { fetchVideos } from '../services'
 import { useHistory, useRouteMatch } from 'react-router'
 
@@ -54,43 +53,33 @@ export default function NavBar() {
 
 function SearchInput() {
     const classes = useStyles()
-    const [_, setQueryData] = useQueryData()
     const history = useHistory()
-    const { isExact } = useRouteMatch()
     const [isSearching, setIsSearching] = useState(false)
-
-    const [debug, setDebug] = useState(null);
+    const [debug, setDebug] = useState(null)
 
     const handleOnSearchClick = async () => {
         try {
-            if (isSearching) {
-                return
-            }
-            console.log('triggered')
-            setIsSearching(true)
             const searchValue = document.querySelector('#search').value
-
-            if (!searchValue || searchValue.length === 0) {
-                console.log('stoped')
+            if (isSearching || searchValue.length === 0) {
                 return
             }
+            
+            setIsSearching(true)
             const { data } = await fetchVideos(searchValue)
-
-            setQueryData(data)
-
-            if (!isExact) {
-                history.push('/')
-            }
             setIsSearching(false)
+            history.push(`/videos?q=${searchValue}`, data)
         } catch (err) {
             setIsSearching(false)
-            setDebug(JSON.stringify(err));
+            setDebug(JSON.stringify(err))
             console.log(err)
         }
     }
 
-    if(debug) {
-        return ReactDom.createPortal(<div>{debug}</div>, document.querySelector("#debug"));
+    if (debug) {
+        return ReactDom.createPortal(
+            <div>{debug}</div>,
+            document.querySelector('#debug')
+        )
     }
     return (
         <Paper component="div" className={classes.paperWrapper}>
@@ -118,8 +107,6 @@ function SearchInput() {
                 ) : (
                     <SearchIcon style={{ fontSize: 18 }} />
                 )}
-                {/* <SearchIcon />
-                <CircularProgress size={20} /> */}
             </IconButton>
         </Paper>
     )

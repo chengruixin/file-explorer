@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import {
     Container,
     Typography,
@@ -9,7 +9,7 @@ import {
     IconButton,
     Paper,
 } from '@material-ui/core'
-import { useVideoInfo } from '../../context'
+import { useVideoInfo } from '../../../context'
 import { useStyles } from './style'
 import Player from './Player'
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder'
@@ -19,15 +19,13 @@ import BookmarkIcon from '@material-ui/icons/Bookmark'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
 
 export default function VideoDisplay() {
-    const [videoInfo, setVideoInfo] = useVideoInfo()
-    const { url, fileName, fileSize, location } = videoInfo
-    const history = useHistory()
+    const { state } = useLocation()
+    const { _id, fileName, fileSize, handledFile } = state
     const classes = useStyles()
-
     return (
         <Container>
             <main>
-                <Player url={url} />
+                <Player url={`/videos/${_id}`} />
 
                 <Typography variant="h6" component="h1">
                     {fileName}
@@ -49,7 +47,7 @@ export default function VideoDisplay() {
                     <Typography
                         className={classes.shallowText + ' ' + classes.flexGrow}
                     >
-                        {location}
+                        {handledFile}
                     </Typography>
 
                     {/* <Paper> */}
