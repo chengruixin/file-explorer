@@ -10,5 +10,6 @@ module.exports = [
     "J:/Downloads",
     "K:/BaiduNetdiskDownload",
     "K:/MoviesFromDrive",
-    "K:/迅雷下载"
+    "K:/迅雷下载",
+    "Z:/迅雷下载"
 ]
