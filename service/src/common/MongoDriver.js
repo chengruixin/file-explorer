@@ -32,6 +32,8 @@ async function refreshDatabase() {
 
         const c = await movies.find().count()
         console.log('succeeded numbers:', c)
+    } catch(e) {
+        console.error('Catched Error:\n', e);
     } finally {
         await client.close()
     }
