@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
-import NavBar from './components/NavBar'
+import NavBar from './components/Navbar'
 import MainRoute from './components/MainRoute'
 import IndexContext from './context'
 import './App.css'

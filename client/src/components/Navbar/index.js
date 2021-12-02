@@ -11,8 +11,11 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import SearchIcon from '@material-ui/icons/Search'
-import { fetchVideos } from '../services'
+import RefreshIcon from '@material-ui/icons/Refresh'
+import { fetchVideos } from '../../services'
 import { useHistory, useRouteMatch } from 'react-router'
+import withLoading from '../HOC/withLoading'
+import styles from './index.module.css'
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -42,10 +45,28 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NavBar() {
     const classes = useStyles()
+    const [isLoading, setIsLoading] = useState(false)
+    const RefreshIconWithLoading = withLoading(RefreshIcon)
+    const handleRefresh = () => {
+        setIsLoading(true)
+        setTimeout(() => {
+            setIsLoading(false)
+        }, 3000)
+    }
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar className={classes.toolBar}>
+                <div className={styles['navbar-left-box']}></div>
                 <SearchInput />
+                <div className={styles['navbar-right-box']}>
+                    <IconButton onClick={handleRefresh} disabled={isLoading}>
+                        <RefreshIconWithLoading
+                            isLoading={isLoading}
+                            size={18}
+                            className={styles['white-text']}
+                        />
+                    </IconButton>
+                </div>
             </Toolbar>
         </AppBar>
     )
@@ -56,14 +77,14 @@ function SearchInput() {
     const history = useHistory()
     const [isSearching, setIsSearching] = useState(false)
     const [debug, setDebug] = useState(null)
-
-    const handleOnSearchClick = async () => {
+    const SearchIconWithLoading = withLoading(SearchIcon)
+    const handleSearchClick = async () => {
         try {
             const searchValue = document.querySelector('#search').value
             if (isSearching || searchValue.length === 0) {
                 return
             }
-            
+
             setIsSearching(true)
             const { data } = await fetchVideos(searchValue)
             setIsSearching(false)
@@ -90,7 +111,7 @@ function SearchInput() {
                 inputProps={{ 'aria-label': 'Try to give a search' }}
                 onKeyPressCapture={(e) => {
                     if (e.code === 'Enter') {
-                        handleOnSearchClick()
+                        handleSearchClick()
                     }
                 }}
             />
@@ -99,14 +120,14 @@ function SearchInput() {
                 type="submit"
                 className={classes.iconButton}
                 aria-label="search"
-                onClick={handleOnSearchClick}
+                onClick={handleSearchClick}
                 disabled={isSearching}
             >
-                {isSearching ? (
-                    <CircularProgress size={18} />
-                ) : (
-                    <SearchIcon style={{ fontSize: 18 }} />
-                )}
+                <SearchIconWithLoading
+                    isLoading={isSearching}
+                    style={{ fontSize: 18 }}
+                    size={18}
+                />
             </IconButton>
         </Paper>
     )
