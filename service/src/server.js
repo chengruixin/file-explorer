@@ -12,6 +12,7 @@ const options = {
     key: fs.readFileSync(path.join(__dirname, '../.certs/server.key')),
     cert: fs.readFileSync(path.join(__dirname, '../.certs/server.cert')),
 }
+const { refreshDatabase } = require('./common/MongoDriver')
 
 // app.use((req, res, next) => {
 //     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -98,6 +99,10 @@ app.get('/image', (req, res) => {
     })
 })
 
+app.post('/refresh', async (req, res) => {
+    await refreshDatabase()
+    res.status(200).end()
+})
 app.listen(HTTP_PORT, () => {
     console.log(`Http  open on port ${HTTP_PORT}`)
 })
