@@ -1,0 +1,20 @@
+{
+  "name": "file-explorer",
+  "version": "1.0.0",
+  "description": "todos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"cd client && npm start\" \"cd service && npm run start\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chengruixin/file-explorer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chengruixin/file-explorer/issues"
+  },
+  "homepage": "https://github.com/chengruixin/file-explorer#readme"
+}

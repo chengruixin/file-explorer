@@ -77,7 +77,7 @@ app.get('/videos/:id', async (req, res) => {
         }
 
         res.writeHead(206, headers)
-        file.pipe(res)
+        file.pipe(res);
     } catch (e) {
         console.error('Catched Error:\n', e)
     }
