@@ -1,10 +1,10 @@
 package main
 
+import "goserver/src/fileExplore"
 
-import (
-	"goserver/src/fileExplore"
-)
+// "goserver/src/fileExplore"
 
-func main()  {
+func main() {
 	fileExplore.Test()
+	// dbutils.Test()
 }

@@ -2,7 +2,7 @@ const fs = require("fs");
 const fsPromises = fs.promises;
 const { readdir, stat } = fsPromises;
 const path = require("path");
-const {findExactItems} = require("../../libs/raxSearch/raxSearch.dev").exactMatcher;
+const { findExactItems } = require("../../libs/raxSearch/raxSearch.dev").exactMatcher;
 
 const hasPattern = (searcher, pattern) => searcher.findFirst(pattern.toLowerCase()) >= 0;
 const hasAllPatterns = (searchers, pattern) => {
@@ -39,7 +39,7 @@ async function searchFilesFromOneDirectory (directory, searchPatterns, streamWri
                 const fileSize = (stats.size / 1024 / 1024 / 1024).toFixed(2) + " GB";
                 const extname = path.extname(handledFile);
                 const fileName = path.basename(handledFile)
-
+                
                 if(extname === ".torrent") {
                     continue;
                 }
@@ -78,7 +78,7 @@ async function searchFilesFromOneDirectory (directory, searchPatterns, streamWri
 
 function searchFiles (directories, searchPattern, streamWriter) {
     return Promise.all(
-        directories.map( dir  => {
+        directories.map(dir  => {
             return searchFilesFromOneDirectory(dir, searchPattern, streamWriter)
         })
     ).then( matchedItemBundles => {
