@@ -13,7 +13,7 @@ const streamWriter = require("fs").createWriteStream('./.results');
 
     console.time("test")
     searchFiles(directoriesToBeExplored, args.slice(2), streamWriter)
-        .then( data => {
+        .then(data => {
             console.timeEnd("test");
         })
 })();
