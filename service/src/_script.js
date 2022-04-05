@@ -1,4 +1,4 @@
-const searchFiles = require("./common/searchFilesAsync");
+const searchFiles = require("./utils/searchFiles");
 const path = require("path");
 const directoriesToBeExplored = require("./data/dirsTobeExplored");
 const args = process.argv;
