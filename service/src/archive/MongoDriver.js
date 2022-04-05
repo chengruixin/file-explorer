@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb')
-const searchFiles = require('./searchFilesAsync')
+const searchFiles = require('../utils/searchFiles')
 const dirs = require('../data/DirsTobeExplored')
 
 const uri =
