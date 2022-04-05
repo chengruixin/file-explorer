@@ -14,6 +14,14 @@ const hasAllPatterns = (searchers, pattern) => {
 
     return true;
 }
+const streamWrite = (streamWriter, fileinfo) => {
+    // do nothing here
+    // streamWriter.write("name : " + basename + "\n");
+    // streamWriter.write("path : " + filepath + "\n");
+    // streamWriter.write("type : " + extname + "\n");
+    // streamWriter.write("size : " + size + "\n\n");
+}
+
 async function searchFilesFromOneDirectory (directory, searchPatterns, streamWriter) {
     try {
         const files = await readdir(directory);
@@ -27,45 +35,35 @@ async function searchFilesFromOneDirectory (directory, searchPatterns, streamWri
         }
        
         while (filesStack.length > 0) {
-            const handledFile = filesStack.shift();
-            const stats = await stat(handledFile);
+            const filepath = filesStack.shift();
+            const stats = await stat(filepath);
 
             if(stats.isDirectory()){
-                const files = await readdir(handledFile);
+                const files = await readdir(filepath);
                 for(let i = 0; i < files.length; i++){
-                    filesStack.push(path.join(handledFile, files[i]));
+                    filesStack.push(path.join(filepath, files[i]));
                 }
             } else {
-                const fileSize = (stats.size / 1024 / 1024 / 1024).toFixed(2) + " GB";
-                const extname = path.extname(handledFile);
-                const fileName = path.basename(handledFile)
-                
-                if(extname === ".torrent") {
+                // const size = (stats.size / 1024 / 1024 / 1024).toFixed(2) + " GB";
+                const extname = path.extname(filepath);
+                const basename = path.basename(filepath)
+                const birthTime = Math.floor(stats.birthtimeMs);
+                const isValid = extname !== '.torrent' && hasAllPatterns(searchers, filepath);
+                if (!isValid) {
                     continue;
                 }
-
-                // if(fileName.toLowerCase().indexOf(searchPattern) === -1) {
-                //     continue;
-                // }
-
-                if(!hasAllPatterns(searchers, handledFile)){
-                    continue;
-                }
-
-                if (streamWriter) {
-                    streamWriter.write("name : " + fileName + "\n");
-                    streamWriter.write("path : " + handledFile + "\n");
-                    streamWriter.write("type : " + extname + "\n");
-                    streamWriter.write("size : " + fileSize + "\n\n");
-                }
-
-                matchedItems.push({
-                    fileName,
-                    handledFile,
+            
+                const fileinfo = {
+                    basename,
                     extname,
-                    fileSize
-                })
-                
+                    filepath,
+                    size: stats.size,
+                    birthTime
+                };
+                matchedItems.push(fileinfo);
+                if (streamWriter) {
+                    streamWrite(streamWriter, fileinfo);
+                }
             }
         }
 
