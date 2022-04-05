@@ -37,7 +37,6 @@ async function searchFilesFromOneDirectory (directory, searchPatterns, streamWri
         while (filesStack.length > 0) {
             const filepath = filesStack.shift();
             const stats = await stat(filepath);
-
             if(stats.isDirectory()){
                 const files = await readdir(filepath);
                 for(let i = 0; i < files.length; i++){
@@ -52,14 +51,17 @@ async function searchFilesFromOneDirectory (directory, searchPatterns, streamWri
                 if (!isValid) {
                     continue;
                 }
-            
+                
+                const unixPath = filepath.split(path.sep).join(path.posix.sep)
+
                 const fileinfo = {
                     basename,
                     extname,
-                    filepath,
+                    filepath: unixPath,
                     size: stats.size,
                     birthTime
                 };
+
                 matchedItems.push(fileinfo);
                 if (streamWriter) {
                     streamWrite(streamWriter, fileinfo);
