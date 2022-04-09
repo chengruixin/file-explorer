@@ -2,7 +2,8 @@ module.exports = [
     'F:/newworld',
     'F:/AllOfAll',
     'F:/marvals',
-    'F:/themovies'
+    'F:/themovies',
+    'E:/movies',
 ];
 // module.exports = [
 //     "D:/downloads",
