@@ -49,6 +49,6 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Println(res.GetSucces())
+		fmt.Println(res.GetSuccess())
 	}
 }
