@@ -2,25 +2,26 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
+import raxFileClient from './grpc';
 
 const app = express()
 const HTTP_PORT = 8080
 const HTTPS_PORT = 8443
 
 app.get('/query', async (req, res) => {
-    res.send("adsfadsasdfasf");
-    // const { search } = req.query
-    // console.log('\nSearching:', search)
-    // if (!search) {
-    //     res.json([])
-    //     console.log('return')
-    //     return
-    // }
+    const { search } = req.query as {search: string};
+    if (!search) {
+        res.json([])
+        return
+    }
 
-    // const movies = await findMovies(search.split(' '))
-    // console.info(movies.length)
-    // res.json(movies)
-})
+    const videos = await raxFileClient.SearchVideosAsync({
+        Patterns: search.split(" "),
+        PageNo: 0,
+        PageSize: 0
+    });
+    res.json(videos);
+});
 
 app.get('/videos/:id', async (req, res) => {
     // try {
