@@ -41,3 +41,12 @@ func ExploreFiles(path string) []*files.FileInfo {
 
 	return fileInfos
 }
+
+func ExploreFilesMulti(path []string) []*files.FileInfo {
+	fileInfos := []*files.FileInfo{}
+	for _, dir := range path {
+		fileInfos = append(fileInfos, ExploreFiles(dir)...)
+	}
+
+	return fileInfos
+}
