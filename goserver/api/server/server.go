@@ -34,8 +34,8 @@ func (r *raxFileServer) SearchVideos(ctx context.Context, in *pb.SearchVideosReq
 		})
 	}
 	res := pb.SearchVideosResponse{
-		FileInfo: pbFileInfos,
-		Total:    int32(total),
+		FileInfos: pbFileInfos,
+		Total:     int32(total),
 	}
 
 	return &res, nil
@@ -56,11 +56,11 @@ func (r *raxFileServer) RescanFilesAndUpdateDB(ctx context.Context, in *pb.Resca
 
 	if err := dbclient.UpdateVideosSoft(fileInfos); err == nil {
 		return &pb.RescanFilesAndUpdateDBResponse{
-			Succes: true,
+			Success: true,
 		}, nil
 	} else {
 		return &pb.RescanFilesAndUpdateDBResponse{
-			Succes: false,
+			Success: false,
 		}, err
 	}
 }

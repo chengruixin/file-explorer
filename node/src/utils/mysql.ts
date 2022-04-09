@@ -6,7 +6,7 @@ export interface VideoListTableStruct {
     id: number;
     file_path: string;
     file_name: string;
-    modification_time: number;
+    creation_time: number;
     size: number; // in bytes
     extra: Buffer;
     ext_name: string;
@@ -108,7 +108,7 @@ export const searchVideos = async (patterns: string[], params?: paramsI): Promis
     
     // TODO: add limit clause here
 
-    const results = await query<VideoListTableStruct>(`SELECT * FROM ${TABLES.VIDEO_LIST} WHERE ${likeClause} ORDER BY modification_time desc`);
+    const results = await query<VideoListTableStruct>(`SELECT * FROM ${TABLES.VIDEO_LIST} WHERE ${likeClause} ORDER BY creation_time desc`);
 
     return results.map(turnVideoListTableStruct2FileInfo);
 }

@@ -10,5 +10,5 @@ export const turnVideoListTableStruct2FileInfo = (struct: VideoListTableStruct):
     extname: struct.ext_name,
     filepath: struct.file_path,
     size: struct.size,
-    birthTime: struct.modification_time,
+    birthTime: struct.creation_time,
 })
