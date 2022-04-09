@@ -8,3 +8,8 @@ export const fetchVideos = async (val) => {
         throw err
     }
 }
+
+
+export const refreshData = async () => {
+    await axios.post('/refresh')
+}

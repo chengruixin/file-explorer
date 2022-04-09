@@ -12,7 +12,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles'
 import SearchIcon from '@material-ui/icons/Search'
 import RefreshIcon from '@material-ui/icons/Refresh'
-import { fetchVideos } from '../../services'
+import { fetchVideos, refreshData } from '../../services'
 import { useHistory, useRouteMatch } from 'react-router'
 import withLoading from '../HOC/withLoading'
 import styles from './index.module.css'
@@ -49,9 +49,10 @@ export default function NavBar() {
     const RefreshIconWithLoading = withLoading(RefreshIcon)
     const handleRefresh = () => {
         setIsLoading(true)
-        setTimeout(() => {
+
+        refreshData().finally(() => {
             setIsLoading(false)
-        }, 3000)
+        })
     }
     return (
         <AppBar position="static" className={classes.appBar}>
