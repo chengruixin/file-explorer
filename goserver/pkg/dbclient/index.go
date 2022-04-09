@@ -5,12 +5,18 @@ import (
 	"fmt"
 	"goserver/api/types/files"
 	"log"
+	"sort"
 	"strings"
+	"sync"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
+var (
+	db           *sql.DB
+	insertionSQL = "INSERT INTO video_list(id, file_path, file_name, creation_time, size, extra, ext_name) VALUES "
+)
 
 // +---------------+------------------+------+-----+---------+----------------+
 // | Field         | Type             | Null | Key | Default | Extra          |
@@ -38,19 +44,33 @@ func init() {
 
 }
 
-func SearchVideos(patterns []string, pageNo int, pageSize int) []*files.FileInfo {
+func SearchVideos(patterns []string, pageNo int, pageSize int) ([]*files.FileInfo, int) {
+	t := time.Now()
+	defer func() {
+		fmt.Println("search videos duration", time.Since(t))
+	}()
 	whereClause := func() string {
 		conditions := []string{}
 		for _, p := range patterns {
 			conditions = append(conditions, "file_name LIKE \"%"+p+"%\"")
 		}
 
-		return strings.Join(conditions, " AND ")
+		return " WHERE " + strings.Join(conditions, " AND ") + " "
 	}()
 
+	limitClause := func() string {
+		if pageNo <= 0 {
+			return ""
+		}
+
+		return fmt.Sprintf(" LIMIT %v, %v ", pageNo-1, pageSize)
+	}()
+
+	orderSql := " ORDER BY creation_time DESC "
 	// fmt.Println(whereClause)
 
-	sqlStr := fmt.Sprintf(("SELECT * FROM video_list WHERE %v ORDER BY creation_time DESC LIMIT %v, %v"), whereClause, (pageNo-1)*pageSize, pageSize)
+	sqlStr := fmt.Sprintf(("SELECT * FROM video_list %v %v %v"), whereClause, orderSql, limitClause)
+
 	results, err := db.Query(sqlStr)
 	if err != nil {
 		log.Fatalf(err.Error())
@@ -77,41 +97,72 @@ func SearchVideos(patterns []string, pageNo int, pageSize int) []*files.FileInfo
 		videoInfoCollection = append(videoInfoCollection, &tessql)
 	}
 
-	return videoInfoCollection
+	// get total
+	countResults, _ := db.Query("SELECT count(*) as total FROM video_list")
+	var total int
+	if countResults.Next() {
+		countResults.Scan(&total)
+	}
+	return videoInfoCollection, total
 }
 
 func UpdateVideosHard(fileInfos []*files.FileInfo) error {
-	/*
-		INSERT INTO video_list(id, file_path, file_name, creation_time, size, extra, ext_name)
-			VALUES (...), (...)
-	*/
-	db.Query("DELETE FROM video_list")
+	syncLoc := new(sync.WaitGroup)
+
+	syncLoc.Add(1)
+	go func() {
+		db.Query("DELETE FROM video_list")
+		syncLoc.Done()
+	}()
 
 	// construct VALUES
 	valueStrs := []string{}
 	for _, fileInfo := range fileInfos {
-		str := fmt.Sprintf(
-			`(%v, "%v", "%v", %v, %v, "%v", "%v")`,
-			0,
-			*fileInfo.FormatPath(),
-			*fileInfo.FileName,
-			*fileInfo.CreationTime,
-			*fileInfo.Size,
-			*fileInfo.Extra,
-			*fileInfo.ExtName,
-		)
+		str := buildFileInfoInsertionValue(fileInfo)
 		valueStrs = append(valueStrs, str)
 	}
+	leftStrs := valueStrs[:len(valueStrs)/2]
+	rightStrs := valueStrs[len(valueStrs)/2:]
+	leftJoin := strings.Join(leftStrs, ", ")
+	rightJoin := strings.Join(rightStrs, ", ")
 
-	// leftStrs := valueStrs[:len(valueStrs)/2]
-	// rightStrs := valueStrs[len(valueStrs)/2:]
-	// leftJoin := strings.Join(leftStrs, ", ")
-	// rightJoin := strings.Join(rightStrs, ", ")
-	// fmt.Println("leng", len(leftJoin), len(rightJoin))
-	// ioutil.WriteFile("test.txt", []byte(leftJoin), 0644)
-	// ioutil.WriteFile("test.txt", []byte(strings.Join(valueStrs, ",")), 0644)
-	_, err := db.Query("INSERT INTO video_list(id, file_path, file_name, creation_time, size, extra, ext_name) VALUES " + strings.Join(valueStrs, ","))
-	// _, err = db.Query("INSERT INTO video_list(id, file_path, file_name, creation_time, size, extra, ext_name) VALUES " + rightJoin)
+	queryFunc := func(str string) {
+		db.Query(insertionSQL + str)
+		syncLoc.Done()
+	}
+	syncLoc.Add(2)
+	go queryFunc(leftJoin)
+	go queryFunc(rightJoin)
 
+	syncLoc.Wait()
+	return nil
+}
+
+func UpdateVideosSoft(fileInfos []*files.FileInfo) error {
+	sort.Slice(fileInfos, func(i, j int) bool {
+		return *fileInfos[i].CreationTime > *fileInfos[j].CreationTime
+	})
+
+	var dbMaxCTime int64
+	dbRes, _ := db.Query("SELECT max(creation_time) as max FROM video_list")
+	if dbRes.Next() {
+		dbRes.Scan(&dbMaxCTime)
+	}
+
+	valueStrs := []string{}
+	for _, fInfo := range fileInfos {
+		if *fInfo.CreationTime <= dbMaxCTime {
+			break
+		}
+
+		fmt.Println("Should insert", *fInfo.FileName)
+		valueStrs = append(valueStrs, buildFileInfoInsertionValue(fInfo))
+	}
+
+	if len(valueStrs) <= 0 {
+		return nil
+	}
+
+	_, err := db.Query(insertionSQL + strings.Join(valueStrs, ", "))
 	return err
 }

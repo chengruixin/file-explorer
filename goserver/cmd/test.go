@@ -2,28 +2,24 @@ package main
 
 import (
 	"fmt"
-	"goserver/api/types/files"
 	"goserver/configs/exploredirs"
 	"goserver/pkg/dbclient"
 	"goserver/pkg/filehandler"
 )
 
 func main() {
-	fileInfos := []*files.FileInfo{}
-	for _, dir := range exploredirs.Dirs {
-		fileInfos = append(fileInfos, filehandler.ExploreFiles(dir)...)
-	}
+	fileInfos := filehandler.ExploreFilesMulti(exploredirs.Dirs)
 
-	fmt.Println("Found ", len(fileInfos), " files")
+	// fmt.Println("Found ", len(fileInfos), " files")
 
-	err := dbclient.UpdateVideosHard(fileInfos)
+	// err := dbclient.UpdateVideosHard(fileInfos)
 
-	if err != nil {
-		panic(err.Error())
-	}
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 
-	// files := dbclient.SearchVideos([]string{""}, 1, 10)
-	// fmt.Println(len(files))
+	err := dbclient.UpdateVideosSoft(fileInfos)
+	fmt.Println(err)
 
 	// for _, v := range files {
 	// 	fmt.Println(v.String())

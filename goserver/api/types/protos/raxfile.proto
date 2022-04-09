@@ -1,0 +1,41 @@
+// compile commands
+// protoc --go_out=. --go_opt=paths=source_relative  --go-grpc_out=. --go-grpc_opt=paths=source_relative ./raxfile.proto
+syntax = "proto3";
+
+package protos;
+
+option go_package = "goserver/api/types/protos";
+
+service RaxFile {
+    rpc SearchVideos(SearchVideosRequest) returns (SearchVideosResponse) {}
+    rpc RescanFilesAndUpdateDB(RescanFilesAndUpdateDBRequest) returns (RescanFilesAndUpdateDBResponse) {}
+}
+
+message FileInfo {
+	int64 ID = 1;
+	string FilePath = 2;
+	string FileName = 3;
+	string ExtName = 4;
+	int64 CreationTime = 5;
+	int64 Size = 6;
+	string Extra = 7;
+}
+
+message SearchVideosRequest {
+    repeated string Patterns = 1;
+    int32 PageNo = 2;
+    int32 PageSize = 3;
+}
+
+message SearchVideosResponse {
+    repeated FileInfo FileInfo = 1;
+    int32 Total = 2;
+}
+
+message RescanFilesAndUpdateDBRequest {
+
+}
+
+message RescanFilesAndUpdateDBResponse {
+    bool succes = 1;
+}
