@@ -3,6 +3,6 @@ import videosRouter from './routes/videos';
 
 const app = express();
 
-app.use('/videos', videosRouter);
+app.use('/api/videos', videosRouter);
 
 export default app;
