@@ -1,4 +1,4 @@
-export interface RaxFileClient {
+export interface RaxFileService {
     SearchVideos: (a1:SearchVideosRequest, a2: (b1: Error, b2: SearchVideosResponse) => void) => void;
     SearchVideosAsync: (a1: SearchVideosRequest) => Promise<SearchVideosResponse>;
 

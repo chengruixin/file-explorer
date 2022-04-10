@@ -1,8 +1,8 @@
-import raxFileClient from "./grpc";
+import raxFileService from "./grpc";
 
 (async () => {
     try {
-        const res = await raxFileClient.SearchVideosAsync({
+        const res = await raxFileService.SearchVideosAsync({
             Patterns: ["jul"],
             PageNo: 0,
             PageSize: 0

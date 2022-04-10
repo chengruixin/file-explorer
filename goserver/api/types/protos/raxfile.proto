@@ -1,5 +1,6 @@
 // compile commands
 // protoc --go_out=. --go_opt=paths=source_relative  --go-grpc_out=. --go-grpc_opt=paths=source_relative ./raxfile.proto
+// grpc_tools_node_protoc --js_out=import_style=es6,binary:. --grpc_out=grpc_js:. raxfile.proto
 syntax = "proto3";
 
 package protos;
@@ -8,6 +9,9 @@ option go_package = "goserver/api/types/protos";
 
 service RaxFile {
     rpc SearchVideos(SearchVideosRequest) returns (SearchVideosResponse) {}
+
+    rpc SearchVideoByID(SearchVideoByIDRequest) returns (SearchVideoByIDResponse) {}
+    
     rpc RescanFilesAndUpdateDB(RescanFilesAndUpdateDBRequest) returns (RescanFilesAndUpdateDBResponse) {}
 }
 
@@ -32,6 +36,14 @@ message SearchVideosResponse {
     int32 Total = 2;
 }
 
+message SearchVideoByIDRequest {
+    int64 ID = 1;
+}
+
+message SearchVideoByIDResponse {
+    FileInfo FileInfo = 1;
+}
+
 message RescanFilesAndUpdateDBRequest {
 
 }
@@ -39,3 +51,4 @@ message RescanFilesAndUpdateDBRequest {
 message RescanFilesAndUpdateDBResponse {
     bool success = 1;
 }
+
