@@ -1,4 +1,4 @@
-import { RaxFileService as raxFileService, RescanFilesAndUpdateDBRequest, RescanFilesAndUpdateDBResponse, SearchVideosRequest, SearchVideosResponse } from "./protos/types";
+import { RaxFileService, RescanFilesAndUpdateDBRequest, RescanFilesAndUpdateDBResponse, SearchVideoByIDRequest, SearchVideoByIDResponse, SearchVideosRequest, SearchVideosResponse } from "./protos/types";
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const path = require('path');
@@ -16,12 +16,23 @@ const packageDefinition = protoLoader.loadSync(
 
 const protos = grpc.loadPackageDefinition(packageDefinition).protos as any;
 
-const raxFileService = new protos.RaxFile("127.0.0.1:6969", grpc.credentials.createInsecure()) as raxFileService;
+const raxFileService = new protos.RaxFile("127.0.0.1:6969", grpc.credentials.createInsecure()) as RaxFileService;
 
 
 raxFileService.SearchVideosAsync = (req: SearchVideosRequest): Promise<SearchVideosResponse> => {
     return new Promise((resolve, reject) => {
         raxFileService.SearchVideos(req, (err: Error, response: SearchVideosResponse) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(response);
+        })
+    })
+}
+
+raxFileService.SearchVideoByIDAsync = (req: SearchVideoByIDRequest): Promise<SearchVideoByIDResponse> => {
+    return new Promise((resolve, reject) => {
+        raxFileService.SearchVideoByID(req, (err: Error, response: SearchVideoByIDResponse) => {
             if (err) {
                 reject(err);
             }
@@ -40,6 +51,7 @@ raxFileService.RescanFilesAndUpdateDBAsync = (req: RescanFilesAndUpdateDBRequest
         })
     })
 }
+
 
 
 export default raxFileService;
