@@ -1,18 +1,16 @@
 import express from 'express';
-
+import videosController from '../controllers/videosController';
 // base url /videos
 const videosRouter = express();
 
-videosRouter.get('/')
+videosRouter.get('/', videosController.getVideos)
 
-videosRouter.get('/:id', );
+videosRouter.get('/:id', videosController.getVideoByID);
 
-videosRouter.post('/refresh', );
+videosRouter.post('/refresh', videosController.updateVideosSoft);
 
-videosRouter.get('/favorites', );
+// videosRouter.get('/favorites', );
 
-videosRouter.post('/favorites', );
-
-// videosRouter.post('/refresh')
+// videosRouter.post('/favorites', );
 
 export default videosRouter;
