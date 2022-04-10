@@ -9,6 +9,9 @@ option go_package = "goserver/api/types/protos";
 
 service RaxFile {
     rpc SearchVideos(SearchVideosRequest) returns (SearchVideosResponse) {}
+
+    rpc SearchVideoByID(SearchVideoByIDRequest) returns (SearchVideoByIDResponse) {}
+    
     rpc RescanFilesAndUpdateDB(RescanFilesAndUpdateDBRequest) returns (RescanFilesAndUpdateDBResponse) {}
 }
 
@@ -29,8 +32,16 @@ message SearchVideosRequest {
 }
 
 message SearchVideosResponse {
-    repeated FileInfo FileInfo = 1;
+    repeated FileInfo FileInfos = 1;
     int32 Total = 2;
+}
+
+message SearchVideoByIDRequest {
+    int64 ID = 1;
+}
+
+message SearchVideoByIDResponse {
+    FileInfo FileInfo = 1;
 }
 
 message RescanFilesAndUpdateDBRequest {
@@ -38,5 +49,6 @@ message RescanFilesAndUpdateDBRequest {
 }
 
 message RescanFilesAndUpdateDBResponse {
-    bool succes = 1;
+    bool success = 1;
 }
+

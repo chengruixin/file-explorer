@@ -8,7 +8,7 @@ const app = express()
 const HTTP_PORT = 8080
 const HTTPS_PORT = 8443
 
-app.get('/query', async (req, res) => {
+app.get('/videos', async (req, res) => {
     const { search } = req.query as {search: string};
     if (!search) {
         res.json([])
@@ -68,9 +68,17 @@ app.get('/videos/:id', async (req, res) => {
     // }
 })
 
-app.post('/refresh', async (req, res) => {
+app.post('/videos/refresh', async (req, res) => {
     //
-})
+});
+
+app.get('/videos/favorites', async (req, res) => {
+
+});
+
+app.post('/videos/favorites', async (req, res) => {
+
+});
 app.listen(HTTP_PORT, () => {
     console.log(`HTTP open on port ${HTTP_PORT}`)
 })

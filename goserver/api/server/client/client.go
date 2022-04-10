@@ -28,7 +28,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
-	// {
+	// { // search all videos
 	// 	rpcRes, err := client.SearchVideos(ctx, &pb.SearchVideosRequest{
 	// 		Patterns: []string{"jul", "12"},
 	// 		PageNo:   0,
@@ -42,13 +42,25 @@ func main() {
 	// 	fmt.Println(rpcRes.GetTotal())
 	// }
 
-	{
-		res, err := client.RescanFilesAndUpdateDB(ctx, &pb.RescanFilesAndUpdateDBRequest{})
+	// { // refresh update
+	// 	res, err := client.RescanFilesAndUpdateDB(ctx, &pb.RescanFilesAndUpdateDBRequest{})
+
+	// 	if err != nil {
+	// 		log.Fatalf(err.Error())
+	// 	}
+
+	// 	fmt.Println(res.GetSuccess())
+	// }
+
+	{ // search one video by id
+		res, err := client.SearchVideoByID(ctx, &pb.SearchVideoByIDRequest{
+			ID: 220914,
+		})
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf(err.Error())
 		}
 
-		fmt.Println(res.GetSuccess())
+		fmt.Println(res.FileInfo.FileName)
 	}
 }

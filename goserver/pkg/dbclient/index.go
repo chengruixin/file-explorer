@@ -14,8 +14,10 @@ import (
 )
 
 var (
-	db           *sql.DB
-	insertionSQL = "INSERT INTO video_list(id, file_path, file_name, creation_time, size, extra, ext_name) VALUES "
+	DB         *sql.DB
+	DB_NAME    = "rax_video"
+	TABLE_NAME = "video_list"
+	INSERT_SQL = "INSERT INTO " + TABLE_NAME + "(id, file_path, file_name, creation_time, size, extra, ext_name) VALUES "
 )
 
 // +---------------+------------------+------+-----+---------+----------------+
@@ -33,12 +35,12 @@ var (
 func init() {
 	{ // db connection
 		var err error
-		db, err = sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/rax_video")
+		DB, err = sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/"+DB_NAME)
 		if err != nil {
 			log.Fatalln("DB connection failed!")
 		}
-		db.SetConnMaxLifetime(2000)
-		db.SetConnMaxIdleTime(1000)
+		DB.SetConnMaxLifetime(2000)
+		DB.SetConnMaxIdleTime(1000)
 		fmt.Println("DB connected...")
 	}
 
@@ -69,9 +71,9 @@ func SearchVideos(patterns []string, pageNo int, pageSize int) ([]*files.FileInf
 	orderSql := " ORDER BY creation_time DESC "
 	// fmt.Println(whereClause)
 
-	sqlStr := fmt.Sprintf(("SELECT * FROM video_list %v %v %v"), whereClause, orderSql, limitClause)
+	sqlStr := fmt.Sprintf(("SELECT * FROM " + TABLE_NAME + " %v %v %v"), whereClause, orderSql, limitClause)
 
-	results, err := db.Query(sqlStr)
+	results, err := DB.Query(sqlStr)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
@@ -79,26 +81,12 @@ func SearchVideos(patterns []string, pageNo int, pageSize int) ([]*files.FileInf
 
 	videoInfoCollection := make([]*files.FileInfo, 0)
 	for results.Next() {
-		var tessql files.FileInfo
-
-		err := results.Scan(
-			&tessql.ID,
-			&tessql.FilePath,
-			&tessql.FileName,
-			&tessql.CreationTime,
-			&tessql.Size,
-			&tessql.Extra,
-			&tessql.ExtName,
-		)
-
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		videoInfoCollection = append(videoInfoCollection, &tessql)
+		fileInfo, _ := buildFileInfoFromSelect(results)
+		videoInfoCollection = append(videoInfoCollection, fileInfo)
 	}
 
 	// get total
-	countResults, _ := db.Query("SELECT count(*) as total FROM video_list")
+	countResults, _ := DB.Query("SELECT count(*) as total FROM " + TABLE_NAME)
 	var total int
 	if countResults.Next() {
 		countResults.Scan(&total)
@@ -111,7 +99,7 @@ func UpdateVideosHard(fileInfos []*files.FileInfo) error {
 
 	syncLoc.Add(1)
 	go func() {
-		db.Query("DELETE FROM video_list")
+		DB.Query("DELETE FROM " + TABLE_NAME)
 		syncLoc.Done()
 	}()
 
@@ -127,7 +115,7 @@ func UpdateVideosHard(fileInfos []*files.FileInfo) error {
 	rightJoin := strings.Join(rightStrs, ", ")
 
 	queryFunc := func(str string) {
-		db.Query(insertionSQL + str)
+		DB.Query(INSERT_SQL + str)
 		syncLoc.Done()
 	}
 	syncLoc.Add(2)
@@ -144,7 +132,7 @@ func UpdateVideosSoft(fileInfos []*files.FileInfo) error {
 	})
 
 	var dbMaxCTime int64
-	dbRes, _ := db.Query("SELECT max(creation_time) as max FROM video_list")
+	dbRes, _ := DB.Query("SELECT max(creation_time) as max FROM " + TABLE_NAME)
 	if dbRes.Next() {
 		dbRes.Scan(&dbMaxCTime)
 	}
@@ -163,6 +151,18 @@ func UpdateVideosSoft(fileInfos []*files.FileInfo) error {
 		return nil
 	}
 
-	_, err := db.Query(insertionSQL + strings.Join(valueStrs, ", "))
+	_, err := DB.Query(INSERT_SQL + strings.Join(valueStrs, ", "))
 	return err
+}
+
+func SearchVideoByID(id int64) *files.FileInfo {
+	sqlStr := fmt.Sprintf("SELECT * from "+TABLE_NAME+" WHERE id=%v", id)
+	results, _ := DB.Query(sqlStr)
+
+	if results.Next() {
+		f, _ := buildFileInfoFromSelect(results)
+		return f
+	}
+
+	return nil
 }

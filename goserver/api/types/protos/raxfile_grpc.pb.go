@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RaxFileClient interface {
 	SearchVideos(ctx context.Context, in *SearchVideosRequest, opts ...grpc.CallOption) (*SearchVideosResponse, error)
+	SearchVideoByID(ctx context.Context, in *SearchVideoByIDRequest, opts ...grpc.CallOption) (*SearchVideoByIDResponse, error)
 	RescanFilesAndUpdateDB(ctx context.Context, in *RescanFilesAndUpdateDBRequest, opts ...grpc.CallOption) (*RescanFilesAndUpdateDBResponse, error)
 }
 
@@ -43,6 +44,15 @@ func (c *raxFileClient) SearchVideos(ctx context.Context, in *SearchVideosReques
 	return out, nil
 }
 
+func (c *raxFileClient) SearchVideoByID(ctx context.Context, in *SearchVideoByIDRequest, opts ...grpc.CallOption) (*SearchVideoByIDResponse, error) {
+	out := new(SearchVideoByIDResponse)
+	err := c.cc.Invoke(ctx, "/protos.RaxFile/SearchVideoByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *raxFileClient) RescanFilesAndUpdateDB(ctx context.Context, in *RescanFilesAndUpdateDBRequest, opts ...grpc.CallOption) (*RescanFilesAndUpdateDBResponse, error) {
 	out := new(RescanFilesAndUpdateDBResponse)
 	err := c.cc.Invoke(ctx, "/protos.RaxFile/RescanFilesAndUpdateDB", in, out, opts...)
@@ -57,6 +67,7 @@ func (c *raxFileClient) RescanFilesAndUpdateDB(ctx context.Context, in *RescanFi
 // for forward compatibility
 type RaxFileServer interface {
 	SearchVideos(context.Context, *SearchVideosRequest) (*SearchVideosResponse, error)
+	SearchVideoByID(context.Context, *SearchVideoByIDRequest) (*SearchVideoByIDResponse, error)
 	RescanFilesAndUpdateDB(context.Context, *RescanFilesAndUpdateDBRequest) (*RescanFilesAndUpdateDBResponse, error)
 	mustEmbedUnimplementedRaxFileServer()
 }
@@ -67,6 +78,9 @@ type UnimplementedRaxFileServer struct {
 
 func (UnimplementedRaxFileServer) SearchVideos(context.Context, *SearchVideosRequest) (*SearchVideosResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchVideos not implemented")
+}
+func (UnimplementedRaxFileServer) SearchVideoByID(context.Context, *SearchVideoByIDRequest) (*SearchVideoByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchVideoByID not implemented")
 }
 func (UnimplementedRaxFileServer) RescanFilesAndUpdateDB(context.Context, *RescanFilesAndUpdateDBRequest) (*RescanFilesAndUpdateDBResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RescanFilesAndUpdateDB not implemented")
@@ -102,6 +116,24 @@ func _RaxFile_SearchVideos_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RaxFile_SearchVideoByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchVideoByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RaxFileServer).SearchVideoByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.RaxFile/SearchVideoByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RaxFileServer).SearchVideoByID(ctx, req.(*SearchVideoByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RaxFile_RescanFilesAndUpdateDB_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RescanFilesAndUpdateDBRequest)
 	if err := dec(in); err != nil {
@@ -130,6 +162,10 @@ var RaxFile_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchVideos",
 			Handler:    _RaxFile_SearchVideos_Handler,
+		},
+		{
+			MethodName: "SearchVideoByID",
+			Handler:    _RaxFile_SearchVideoByID_Handler,
 		},
 		{
 			MethodName: "RescanFilesAndUpdateDB",
