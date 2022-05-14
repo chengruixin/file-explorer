@@ -2,27 +2,39 @@ package main
 
 import (
 	"fmt"
-	"goserver/configs/exploredirs"
-	"goserver/pkg/dbclient"
-	"goserver/pkg/filehandler"
+	"goserver/pkg/similarity"
 )
 
 func main() {
-	fileInfos := filehandler.ExploreFilesMulti(exploredirs.Dirs)
+	strs := []string{
+		"I am a text with some texts and I dont know what to talk",
+		"Here is another text for continuing show the tricks",
+		"Another one, but short",
+		"Remind that labels and other not english letters symbols are not counted in this algo",
+		"Remind that only english letters will be labels and other counted in this algo",
+	}
 
-	// fmt.Println("Found ", len(fileInfos), " files")
+	tested := []string{
+		"Remind that only symbol are not counted",
+		"another one",
+		"continuing",
+	}
 
-	// err := dbclient.UpdateVideosHard(fileInfos)
+	lshWorker := similarity.BuildStorage(strs)
 
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
+	ress := similarity.Test(lshWorker, tested)
 
-	err := dbclient.UpdateVideosSoft(fileInfos)
-	fmt.Println(err)
-
-	// for _, v := range files {
-	// 	fmt.Println(v.String())
-	// }
-
+	fmt.Println(ress)
 }
+
+// func getSigs(str string, hashFuncs []*similarity.HashFuncProps) []int {
+// 	windowLen := 2
+// 	shingles := similarity.NewShingleExecutor(str, windowLen).TrimUnnecessary().RemoveRepeated().ShingleValue()
+
+// 	oneHotVLoc := similarity.OneHotVectorLocation(shingles, windowLen)
+
+// 	sigs := similarity.MinHash(oneHotVLoc, hashFuncs, 26*26)
+// 	return sigs
+// }
+
+// func
