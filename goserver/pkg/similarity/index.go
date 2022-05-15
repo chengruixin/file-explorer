@@ -5,8 +5,8 @@ import "fmt"
 const windowLen = 2
 
 func BuildStorage(texts []string) *LSHWorker {
-	bands := 10
-	rows := 2
+	bands := 150
+	rows := 3
 	lshWorker := NewLSHWorker(bands, rows)
 	for _, text := range texts {
 		shingles := NewShingleExecutor(text, windowLen).TrimUnnecessary().RemoveRepeated().ShingleValue()

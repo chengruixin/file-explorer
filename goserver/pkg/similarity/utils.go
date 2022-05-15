@@ -17,3 +17,17 @@ func pow(base int, power int) int {
 	}
 	return res
 }
+
+func RemoveRepeated[K comparable](arr []K) []K {
+	lookup := make(map[K]bool)
+	res := make([]K, 0)
+
+	for _, item := range arr {
+		if !lookup[item] {
+			res = append(res, item)
+			lookup[item] = true
+		}
+	}
+
+	return res
+}
