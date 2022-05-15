@@ -36,18 +36,7 @@ func (se *ShingleExecutor) TrimUnnecessary() *ShingleExecutor {
 }
 
 func (se *ShingleExecutor) RemoveRepeated() *ShingleExecutor {
-	set := make(map[string]bool)
-	res := []string{}
-
-	for _, str := range se.ShingleValue() {
-		if !set[str] {
-			res = append(res, str)
-			set[str] = true
-		}
-	}
-
-	se.shingles = res
-
+	se.shingles = RemoveRepeated(se.shingles)
 	return se
 }
 

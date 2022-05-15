@@ -14,11 +14,8 @@ func main() {
 		"Remind that only english letters will be labels and other counted in this algo",
 		"SPLU-zxc",
 		"SPLU-sef",
-
 		"SPLU-xdf",
-
 		"SPLU-abc",
-
 		"SPLU-adb",
 	}
 
@@ -29,13 +26,16 @@ func main() {
 		"splu",
 	}
 
-	lshWorker := similarity.BuildStorage(strs)
+	worker1 := similarity.NewLSHWorker(200, 2, 2)
+	worker2 := similarity.NewLSHWorker(200, 2, 2)
+	worker3 := similarity.NewLSHWorker(200, 2, 2)
 
-	ress := similarity.Test(lshWorker, tested)
+	worker1.MultiAddText(strs)
+	worker2.MultiAddText(strs)
+	worker3.MultiAddText(strs)
 
-	// fmt.Println(ress)
-
-	for _, res := range ress {
+	for _, t := range tested {
+		res := append(worker1.FindCandidates(t), append(worker2.FindCandidates(t), worker3.FindCandidates(t)...)...)
 		fmt.Println(similarity.RemoveRepeated(res))
 	}
 }
