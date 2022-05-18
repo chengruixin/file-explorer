@@ -8,7 +8,7 @@ import (
 func main() {
 	str := "abcde efg, hkl"
 
-	fmt.Println(similarity.NewShingleExecutor(str, 3).ShingleValueComplex())
+	fmt.Println(similarity.NewShingleExecutor(str, 2).ShingleValueSimple())
 }
 
 // func getSigs(str string, hashFuncs []*similarity.HashFuncProps) []int {

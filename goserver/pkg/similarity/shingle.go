@@ -1,27 +1,45 @@
 package similarity
 
 type ShingleExecutor struct {
-	text      string
-	shingles  []string
-	windowLen int
+	text            string
+	shinglesSimple  []string
+	shinglesComplex []string
+	windowLen       int
 }
 
-func (se *ShingleExecutor) ShingleValue() []string {
-	if len(se.shingles) > 0 {
-		return se.shingles
-	}
-
+func shingling(str string, windowLen int) []string {
 	res := []string{}
-	for i := 0; i < len(se.text)-se.windowLen+1; i++ {
-		res = append(res, se.text[i:i+se.windowLen])
+	for i := 0; i < len(str)-windowLen+1; i++ {
+		res = append(res, str[i:i+windowLen])
 	}
-
-	se.shingles = res
-
-	return se.shingles
+	return res
 }
 
-func (se *ShingleExecutor) TrimUnnecessary() *ShingleExecutor {
+func (se *ShingleExecutor) ShingleValueSimple() []string {
+	if se.shinglesSimple != nil && len(se.shinglesSimple) > 0 {
+		return se.shinglesSimple
+	}
+
+	se.shinglesSimple = RemoveRepeated(shingling(se.text, se.windowLen))
+
+	return se.shinglesSimple
+}
+
+func (se *ShingleExecutor) ShingleValueComplex() []string {
+	if se.shinglesComplex != nil && len(se.shinglesComplex) > 0 {
+		return se.shinglesComplex
+	}
+	res := []string{}
+	for i := se.windowLen; i >= 1; i-- {
+		res = append(res, RemoveRepeated(shingling(se.text, i))...)
+	}
+
+	se.shinglesComplex = res
+
+	return se.shinglesComplex
+}
+
+func (se *ShingleExecutor) trimUnnecessary() *ShingleExecutor {
 	res := []byte{}
 
 	for _, r := range se.text {
@@ -35,14 +53,13 @@ func (se *ShingleExecutor) TrimUnnecessary() *ShingleExecutor {
 	return se
 }
 
-func (se *ShingleExecutor) RemoveRepeated() *ShingleExecutor {
-	se.shingles = RemoveRepeated(se.shingles)
-	return se
-}
-
 func NewShingleExecutor(text string, windowLen int) *ShingleExecutor {
-	return &ShingleExecutor{
+	res := &ShingleExecutor{
 		text:      text,
 		windowLen: windowLen,
 	}
+
+	res.trimUnnecessary()
+
+	return res
 }

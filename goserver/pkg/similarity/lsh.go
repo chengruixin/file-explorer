@@ -63,7 +63,7 @@ func (lw *LSHWorker) FindCandidates(text string) []string {
 
 func (lw *LSHWorker) Text2Signature(text string) []int {
 	// shingling
-	shingles := NewShingleExecutor(text, lw.shingleLen).TrimUnnecessary().RemoveRepeated().ShingleValue()
+	shingles := NewShingleExecutor(text, lw.shingleLen).ShingleValueSimple()
 
 	// vectorise
 	oneHotVLoc := OneHotVectorLocation(shingles, lw.shingleLen)
