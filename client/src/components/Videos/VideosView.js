@@ -11,6 +11,8 @@ function VideosView() {
     const state  = useVideos()
     const classes = useStyles()
 
+    console.log(state);
+
     return (
         <>
             <Container maxWidth="lg">
@@ -33,6 +35,7 @@ function useVideos() {
     const searchVal = params.get('q')
 
     if (state) {
+        console.log('return', state);
         return state
     }
 
@@ -40,8 +43,8 @@ function useVideos() {
         return null
     }
 
-    fetchVideos(searchVal).then( response => {
-        history.replace("/videos?q=" + searchVal, response.data);
+    fetchVideos(searchVal).then(({ videoInfos }) => {
+        history.replace("/videos?q=" + searchVal, videoInfos);
     }).catch(console.error)
 
     return null;

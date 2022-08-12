@@ -1,0 +1,15 @@
+.navbar-left-box {
+    display: flex;
+    flex: 1;
+}
+
+.navbar-right-box {
+    display: flex;
+    justify-content: end;
+    flex: 1;
+    flex-direction: row-reverse;
+}
+
+.white-text {
+    color: white;
+}

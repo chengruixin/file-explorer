@@ -8,13 +8,13 @@ import {
     Toolbar,
     colors,
     CircularProgress,
-} from '@material-ui/core'
+} from '@mui/material'
 import { makeStyles } from '@material-ui/core/styles'
 import SearchIcon from '@material-ui/icons/Search'
 import RefreshIcon from '@material-ui/icons/Refresh'
-import { fetchVideos, refreshData } from '../../services'
+import { fetchVideos } from '../../services'
 import { useHistory, useRouteMatch } from 'react-router'
-import withLoading from '../HOC/withLoading'
+import withLoading from '../hoc/withLoading'
 import styles from './index.module.css'
 
 const useStyles = makeStyles((theme) => ({
@@ -49,10 +49,9 @@ export default function NavBar() {
     const RefreshIconWithLoading = withLoading(RefreshIcon)
     const handleRefresh = () => {
         setIsLoading(true)
-
-        refreshData().finally(() => {
+        setTimeout(() => {
             setIsLoading(false)
-        })
+        }, 3000)
     }
     return (
         <AppBar position="static" className={classes.appBar}>
@@ -87,9 +86,9 @@ function SearchInput() {
             }
 
             setIsSearching(true)
-            const { videoInfos } = await fetchVideos(searchValue)
+            const { data } = await fetchVideos(searchValue)
             setIsSearching(false)
-            history.push(`/videos?q=${searchValue}`, videoInfos)
+            history.push(`/videos?q=${searchValue}`, data)
         } catch (err) {
             setIsSearching(false)
             setDebug(JSON.stringify(err))

@@ -25,7 +25,7 @@ export default function VideoDisplay() {
     return (
         <Container>
             <main>
-                <Player url={`/videos/${_id}`} />
+                <Player url={`/api/videos/${_id}`} />
 
                 <Typography variant="h6" component="h1">
                     {fileName}
