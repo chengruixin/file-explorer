@@ -16,7 +16,7 @@ export interface SearchVideosRequest {
 }
 
 export interface SearchVideosResponse {
-    FileInfos: FileInfo[]
+    FileInfos: FileInfo[];
 }
 
 export interface SearchVideoByIDRequest {
@@ -31,7 +31,7 @@ export interface FileInfo {
     ID: number;
     FilePath: string;
     FileName: string;
-    Extname: string;
+    ExtName: string;
     CreationTime: number;
     Size: number;
     Extra: string;

@@ -31,10 +31,36 @@ func localFileInfo2RPC(localFileInfo *files.FileInfo) *pb.FileInfo {
 		FileName:     *localFileInfo.FileName,
 		ExtName:      *localFileInfo.ExtName,
 		CreationTime: *localFileInfo.CreationTime,
-		Size:         *localFileInfo.CreationTime,
+		Size:         *localFileInfo.Size,
 		Extra:        *localFileInfo.Extra,
 	}
 }
+
+func filterRepeated(pbFileInfos []*pb.FileInfo) []*pb.FileInfo {
+	// remove repeated
+	filePathMapLookup := make(map[string]*pb.FileInfo)
+	repeated := 0
+	for _, info := range pbFileInfos {
+		if filePathMapLookup[info.FilePath] != nil {
+			repeated++
+		} else {
+			filePathMapLookup[info.FilePath] = info
+		}
+	}
+
+	if repeated > 0 {
+		log.Printf("Repeated Searching Results: %v", repeated)
+	}
+
+	filteredPBFileInfos := []*pb.FileInfo{}
+
+	for _, info := range filePathMapLookup {
+		filteredPBFileInfos = append(filteredPBFileInfos, info)
+	}
+
+	return filteredPBFileInfos
+}
+
 func (r *raxFileServer) SearchVideos(ctx context.Context, in *pb.SearchVideosRequest) (*pb.SearchVideosResponse, error) {
 	fileInfos, total := dbclient.SearchVideos(in.Patterns, int(in.PageNo), int(in.PageSize))
 
@@ -42,8 +68,11 @@ func (r *raxFileServer) SearchVideos(ctx context.Context, in *pb.SearchVideosReq
 	for _, finfo := range fileInfos {
 		pbFileInfos = append(pbFileInfos, localFileInfo2RPC(finfo))
 	}
+	// remove repeated
+	filteredPBFileInfos := filterRepeated(pbFileInfos)
+
 	res := pb.SearchVideosResponse{
-		FileInfos: pbFileInfos,
+		FileInfos: filteredPBFileInfos,
 		Total:     int32(total),
 	}
 

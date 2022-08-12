@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import raxFileService from "../grpc";
 import fs from 'fs';
 import { catchError } from "../utils/decorators";
+import { sizeInGB } from '../utils/converter';
 
 class VideosController {
     @catchError async getVideos(req: Request, res: Response) {
@@ -12,13 +13,23 @@ class VideosController {
             return;
         }
 
-        const videos = await raxFileService.SearchVideosAsync({
+        const { FileInfos } = await raxFileService.SearchVideosAsync({
             Patterns: search.split(' '),
             PageNo: 0,
             PageSize: 0
         })
 
-        res.json(videos);
+        const resData = FileInfos.map(info => ({
+            _id: info.ID,
+            fileName: info.FileName,
+            handledFile: info.FilePath,
+            extname: info.ExtName,
+            fileSize: sizeInGB(info.Size)
+        }));
+
+        res.json({
+            videoInfos: resData
+        });
     }
 
     @catchError async getVideoByID(req: Request, res: Response) {

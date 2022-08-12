@@ -2,9 +2,13 @@ import axios from 'axios'
 
 export const fetchVideos = async (val) => {
     try {
-        const res = await axios.get('/videos?search=' + val)
-        console.log(res)
-        return res
+        const { data, status } = await axios.get('/api/videos?search=' + val)
+        
+        if (status !== 200) {
+            return {};
+        }
+
+        return data;
     } catch (err) {
         throw err
     }

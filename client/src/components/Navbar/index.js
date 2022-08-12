@@ -87,9 +87,9 @@ function SearchInput() {
             }
 
             setIsSearching(true)
-            const { data } = await fetchVideos(searchValue)
+            const { videoInfos } = await fetchVideos(searchValue)
             setIsSearching(false)
-            history.push(`/videos?q=${searchValue}`, data)
+            history.push(`/videos?q=${searchValue}`, videoInfos)
         } catch (err) {
             setIsSearching(false)
             setDebug(JSON.stringify(err))
