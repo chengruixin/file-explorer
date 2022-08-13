@@ -1,6 +1,6 @@
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import VideosView from './VideosView'
-import VideoDisplay from './VideoDisplay/index.js'
+import VideoDisplay from './VideoDisplay'
 
 function VideosRoute() {
     const { path } = useRouteMatch()

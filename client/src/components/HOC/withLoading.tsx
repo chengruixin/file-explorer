@@ -1,7 +1,7 @@
 import { CircularProgress } from '@material-ui/core'
 
-function withLoading(WrappedComponent) {
-    return (props) => {
+function withLoading(WrappedComponent: any) {
+    return (props: any) => {
         const { isLoading } = props
         return isLoading ? (
             <CircularProgress {...props} />
