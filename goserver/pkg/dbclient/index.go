@@ -157,12 +157,17 @@ func UpdateVideosSoft(fileInfos []*files.FileInfo) error {
 
 func SearchVideoByID(id int64) *files.FileInfo {
 	sqlStr := fmt.Sprintf("SELECT * from "+TABLE_NAME+" WHERE id=%v", id)
-	results, _ := DB.Query(sqlStr)
+	results, err := DB.Query(sqlStr)
+	defer results.Close()
+
+	if err != nil {
+		log.Printf("Error in db query of %v\nError msg:\n %v", sqlStr, err.Error())
+		return nil
+	}
 
 	if results.Next() {
 		f, _ := buildFileInfoFromSelect(results)
 		return f
 	}
-
 	return nil
 }
