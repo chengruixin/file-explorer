@@ -23,7 +23,7 @@ export default function VideoDisplay() {
   const { _id, fileName, fileSize, handledFile } = state;
   const classes = useStyles();
   return (
-    <Container>
+    <Container maxWidth="xl" >
       <main>
         <Player url={`/api/videos/${_id}`} />
 
