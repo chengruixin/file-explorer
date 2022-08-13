@@ -3,6 +3,9 @@ import NavBar from './components/Navbar';
 import MainRoute from './components/MainRoute';
 import IndexContext from './context';
 import './App.css';
+import React from 'react';
+
+console.log(React.version);
 
 function App() {
   return (
