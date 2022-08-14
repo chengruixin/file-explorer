@@ -20,18 +20,18 @@ import styles from './index.module.css';
 const useStyles = makeStyles((theme) => ({
   appBar: {
     backgroundColor: colors.lightBlue[600],
-    // height: 70
   },
   paperWrapper: {
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 400,
-    height: 30,
+    width: 1200,
+    height: 40,
   },
   toolBar: {
     display: 'flex',
     justifyContent: 'center',
+    height: 80
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -55,7 +55,7 @@ export default function NavBar() {
     });
   };
   return (
-    <AppBar position="static" className={classes.appBar}>
+    <AppBar position="sticky" className={classes.appBar}>
       <Toolbar className={classes.toolBar}>
         <div className={styles['navbar-left-box']}></div>
         <SearchInput />
@@ -126,7 +126,6 @@ function SearchInput() {
       >
         <SearchIconWithLoading
           isLoading={isSearching}
-          style={{ fontSize: 18 }}
           size={18}
         />
       </IconButton>
