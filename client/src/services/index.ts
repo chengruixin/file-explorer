@@ -16,5 +16,5 @@ export const fetchVideos = async (val) => {
 
 
 export const refreshData = async () => {
-  await axios.post('/refresh')
+  await axios.post('/api/videos/refresh')
 }
