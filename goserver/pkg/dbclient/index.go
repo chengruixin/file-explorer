@@ -133,6 +133,8 @@ func UpdateVideosSoft(fileInfos []*files.FileInfo) error {
 
 	var dbMaxCTime int64
 	dbRes, _ := DB.Query("SELECT max(creation_time) as max FROM " + TABLE_NAME)
+	defer dbRes.Close()
+
 	if dbRes.Next() {
 		dbRes.Scan(&dbMaxCTime)
 	}
@@ -158,12 +160,13 @@ func UpdateVideosSoft(fileInfos []*files.FileInfo) error {
 func SearchVideoByID(id int64) *files.FileInfo {
 	sqlStr := fmt.Sprintf("SELECT * from "+TABLE_NAME+" WHERE id=%v", id)
 	results, err := DB.Query(sqlStr)
-	defer results.Close()
 
 	if err != nil {
 		log.Printf("Error in db query of %v\nError msg:\n %v", sqlStr, err.Error())
 		return nil
 	}
+
+	defer results.Close()
 
 	if results.Next() {
 		f, _ := buildFileInfoFromSelect(results)

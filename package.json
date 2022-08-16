@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"cd client && npm run nobrowser\" \"cd service && npm run start\""
+    "dev": "concurrently \"cd client && npm run nobrowser\" \"cd node && npm run start\" \"cd goserver/api/server && go run server.go \""
   },
   "repository": {
     "type": "git",
