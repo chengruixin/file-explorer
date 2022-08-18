@@ -1,3 +1,5 @@
 upgrade to ts
 upgrade react to 18.00
-add redux
+add mobx
+
+add one key to start all command tool

@@ -3,6 +3,7 @@ import raxFileService from "../grpc";
 import fs from 'fs';
 import { catchError } from "../utils/decorators";
 import { sizeInGB } from '../utils/converter';
+import { getFileInfoByID } from "../service";
 
 class VideosController {
     @catchError async getVideos(req: Request, res: Response) {
@@ -35,13 +36,11 @@ class VideosController {
     @catchError async getVideoByID(req: Request, res: Response) {
         const { id } = req.params;
 
-        const { FileInfo } = await raxFileService.SearchVideoByIDAsync({
-            ID: parseInt(id, 10)
-        });
+        const fileInfo = await getFileInfoByID(id);
 
         // path: FileInfo.FilePath
         const { range } = req.headers;
-        const videoSize = fs.statSync(FileInfo.FilePath).size;
+        const videoSize = fs.statSync(fileInfo.FilePath).size;
         const parts = range.replace(/bytes=/, '').split('-');
         const start = parseInt(parts[0], 10);
         const end = parts[1] ? parseInt(parts[1], 10) : videoSize - 1;
@@ -54,7 +53,7 @@ class VideosController {
         }
 
         const contentLength = end - start + 1;
-        const file = fs.createReadStream(FileInfo.FilePath, { start, end });
+        const file = fs.createReadStream(fileInfo.FilePath, { start, end });
         const headers = {
             'Content-Range': `bytes ${start}-${end}/${videoSize}`,
             'Accept-Ranges': 'bytes',
