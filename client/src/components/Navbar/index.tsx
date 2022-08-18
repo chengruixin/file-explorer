@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { fetchVideos, refreshData } from '../../services';
-import { useHistory, useRouteMatch } from 'react-router';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import withLoading from '../HOC/withLoading';
 import styles from './index.module.css';
 

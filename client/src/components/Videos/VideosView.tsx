@@ -2,7 +2,7 @@ import { Container } from '@material-ui/core';
 import './index.css';
 import VideoCard from './VideoCard';
 import { useStyles } from './style';
-import { useHistory, useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router-dom';
 import { fetchVideos } from '../../services';
 
 function VideosView() {

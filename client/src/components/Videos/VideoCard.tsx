@@ -14,7 +14,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import { useStyles } from './style';
 import { useVideoInfo } from '../../context';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 
 export default function VideoCard({ information }) {
   const classes = useStyles();
