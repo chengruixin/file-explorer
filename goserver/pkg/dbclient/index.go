@@ -46,7 +46,12 @@ func init() {
 
 }
 
+// func SearchVideos
+
 func SearchVideos(patterns []string, pageNo int, pageSize int) ([]*files.FileInfo, int) {
+	if len(patterns) == 0 {
+		return []*files.FileInfo{}, 0
+	}
 	t := time.Now()
 	defer func() {
 		fmt.Println("search videos duration", time.Since(t))
