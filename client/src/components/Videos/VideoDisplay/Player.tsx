@@ -50,18 +50,24 @@ export default function Player({ url }) {
     videoRef.current.volume = 0;
   }, []);
 
+  useEffect(() => {    
+    videoRef.current?.load();
+  }, [url]);
+
   return (
-    <video
-      className={classes.verticalMargin}
-      style={{
-        width: '100%',
-      }}
-      controls
-      autoPlay
-      onKeyDownCapture={handleEvents}
-      ref={videoRef}
-    >
-      <source src={url} type="video/mp4" />
-    </video>
+    <>
+      <video
+        className={classes.verticalMargin}
+        style={{
+          width: '100%',
+        }}
+        controls
+        autoPlay
+        onKeyDownCapture={handleEvents}
+        ref={videoRef}
+      >
+        <source src={url} type="video/mp4" />
+      </video>
+    </>
   );
 }

@@ -16,6 +16,7 @@ import { fetchVideos, refreshData } from '../../services';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import withLoading from '../HOC/withLoading';
 import styles from './index.module.css';
+import { videoStore } from '../../store/videoStore';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -77,35 +78,34 @@ function SearchInput() {
   const classes = useStyles();
   const history = useHistory();
   const [isSearching, setIsSearching] = useState(false);
-  const [debug, setDebug] = useState(null);
   const SearchIconWithLoading = withLoading(SearchIcon);
+  const [inputVal, setInputVal] = useState("");
   const handleSearchClick = async () => {
     try {
-      const searchValue = document?.querySelector<HTMLInputElement>('#search')?.value;
-      if (isSearching || searchValue.length === 0) {
+      if (isSearching || inputVal.length === 0) {
         return;
       }
 
       setIsSearching(true);
-      const { videoInfos } = await fetchVideos(searchValue);
+      const { videoInfos } = await fetchVideos({
+        search: inputVal
+      });
       setIsSearching(false);
-      history.push(`/videos?q=${searchValue}`, videoInfos);
+      videoStore.videoList = videoInfos;
+      history.push(`/videos?q=${inputVal}`);
     } catch (err) {
       setIsSearching(false);
-      setDebug(JSON.stringify(err));
       console.log(err);
     }
   };
 
-  if (debug) {
-    return ReactDom.createPortal(
-      <div>{debug}</div>,
-      document.querySelector('#debug')
-    );
-  }
   return (
     <Paper component="div" className={classes.paperWrapper}>
       <InputBase
+        value={inputVal}
+        onChange={(e) => {
+          setInputVal(e.target.value);
+        }}
         className={classes.input}
         id="search"
         placeholder="Try to give a search"

@@ -7,10 +7,27 @@ import { getFileInfoByID } from "../service";
 
 class VideosController {
     @catchError async getVideos(req: Request, res: Response) {
-        const { search } = req.query as { search: string };
+        const { search, id } = req.query as { search: string, id : string };
+        console.log(search, id);
+        if (!search && !id) {
+            res.json({
+                videoInfos: []
+            });
+            return;
+        }
 
-        if (!search) {
-            res.json([]);
+        if (id) {
+            const resData = await getFileInfoByID(id);
+            console.log(resData)
+            res.json({
+                videoInfos: [{
+                    _id: resData.ID,
+                    fileName: resData.FileName,
+                    handledFile: resData.FilePath,
+                    extname: resData.ExtName,
+                    fileSize: sizeInGB(resData.Size)
+                }]
+            });
             return;
         }
 
@@ -63,6 +80,12 @@ class VideosController {
 
         res.writeHead(206, headers);
         file.pipe(res);
+    }
+
+    @catchError async getVideoInfoByID(req: Request, res: Response) {
+        const { id } = req.params;
+
+        
     }
 
     @catchError async updateVideosSoft(_: Request, res: Response) {

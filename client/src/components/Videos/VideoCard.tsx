@@ -15,14 +15,17 @@ import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import { useStyles } from './style';
 import { useVideoInfo } from '../../context';
 import { useHistory } from 'react-router-dom';
+import { videoStore } from '../../store/videoStore';
 
 export default function VideoCard({ information }) {
   const classes = useStyles();
   const history = useHistory();
+  
   const { fileSize, fileName, _id } = information;
 
   const onPlay = () => {
-    history.push(`/videos/${_id}`, information);
+    history.push(`/videos/${_id}`);
+    videoStore.currentVideoID = _id;
   };
 
   const onAddingToFavorites = (e) => {
@@ -33,6 +36,7 @@ export default function VideoCard({ information }) {
     e.stopPropagation();
     console.log('clicked on sharing');
   };
+
   return (
     <Card className={classes.cardBox} onClick={onPlay}>
       <CardContent>
