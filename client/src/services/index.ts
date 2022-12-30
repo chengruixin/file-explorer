@@ -1,11 +1,22 @@
 import axios from 'axios'
+import { VideoInfoT } from '../types';
 
-export const fetchVideos = async (val) => {
+export const fetchVideos = async ({ search, id } : {
+  search?: string;
+  id?: string;
+}): Promise<{
+  videoInfos: Array<VideoInfoT>;
+}> => {
   try {
-    const { data, status } = await axios.get('/api/videos?search=' + val)
+    const { data, status } = await axios.get('/api/videos', {
+      params: {
+        search,
+        id
+      }
+    })
 
     if (status !== 200) {
-      return {};
+      return {} as any;
     }
 
     return data;
