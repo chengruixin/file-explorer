@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"goserver/configs/exploredirs"
 	"goserver/pkg/filehandler"
+	"time"
 )
 
 func main() {
+	n := time.Now()
 	fileInfos := filehandler.ExploreFilesMulti(exploredirs.Dirs)
 
 	// fmt.Println("Found ", len(fileInfos), " files")
@@ -18,7 +20,7 @@ func main() {
 	// }
 
 	// err := dbclient.UpdateVideosSoft(fileInfos)
-	fmt.Println(len(fileInfos))
+	fmt.Println(len(fileInfos), time.Since(n).Milliseconds())
 
 	// for _, v := range files {
 	// 	fmt.Println(v.String())
