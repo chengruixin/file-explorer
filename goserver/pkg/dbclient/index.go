@@ -54,7 +54,7 @@ func SearchVideos(patterns []string, pageNo int, pageSize int) ([]*files.FileInf
 	whereClause := func() string {
 		conditions := []string{}
 		for _, p := range patterns {
-			conditions = append(conditions, "file_name LIKE \"%"+p+"%\"")
+			conditions = append(conditions, "file_path LIKE \"%"+p+"%\"")
 		}
 
 		return " WHERE " + strings.Join(conditions, " AND ") + " "
@@ -96,7 +96,7 @@ func SearchVideos(patterns []string, pageNo int, pageSize int) ([]*files.FileInf
 
 func UpdateVideosHard(fileInfos []*files.FileInfo) error {
 	syncLoc := new(sync.WaitGroup)
-
+	fmt.Println("call1")
 	syncLoc.Add(1)
 	go func() {
 		DB.Query("DELETE FROM " + TABLE_NAME)
@@ -115,12 +115,20 @@ func UpdateVideosHard(fileInfos []*files.FileInfo) error {
 	rightJoin := strings.Join(rightStrs, ", ")
 
 	queryFunc := func(str string) {
-		DB.Query(INSERT_SQL + str)
+		fmt.Println("inserting")
+		_, err := DB.Query(INSERT_SQL + str)
+
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 		syncLoc.Done()
 	}
+
+	fmt.Println("call")
 	syncLoc.Add(2)
 	go queryFunc(leftJoin)
 	go queryFunc(rightJoin)
+	fmt.Println("return")
 
 	syncLoc.Wait()
 	return nil

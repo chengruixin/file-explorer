@@ -81,11 +81,12 @@ func ExploreFilesConcurrent(path string) []*files.FileInfo {
 
 	fileOutputChan := make(chan *files.FileInfo)
 	quitChan := make(chan int)
-	go fileWorker(fileInputChan, fileOutputChan, quitChan, path)
-	go fileWorker(fileInputChan, fileOutputChan, quitChan, path)
-	go fileWorker(fileInputChan, fileOutputChan, quitChan, path)
-	go fileWorker(fileInputChan, fileOutputChan, quitChan, path)
-	go fileWorker(fileInputChan, fileOutputChan, quitChan, path)
+
+	const THREADS = 10
+
+	for i := 0; i < THREADS; i++ {
+		go fileWorker(fileInputChan, fileOutputChan, quitChan, path)
+	}
 
 	returnedList := []*files.FileInfo{}
 	completedJobs := 0
@@ -96,7 +97,7 @@ L:
 			returnedList = append(returnedList, output)
 		case <-quitChan:
 			completedJobs++
-			if completedJobs >= 5 {
+			if completedJobs >= THREADS {
 				break L
 			}
 		}
@@ -147,7 +148,6 @@ func ExploreFilesMulti(path []string) []*files.FileInfo {
 
 			quitChan <- 0
 		}(dir)
-		// fileInfos = append(fileInfos, )...)
 	}
 
 	returnedList := []*files.FileInfo{}
@@ -176,3 +176,59 @@ func ExploreFilesMultiOld(path []string) []*files.FileInfo {
 
 	return fileInfos
 }
+
+type PromiseStatus int
+
+type ResolveCall func(value interface{})
+type RejectCall func(reason interface{})
+
+type InitialExecutor func(resolve ResolveCall, reject RejectCall)
+
+const (
+	FULFILLED PromiseStatus = 1
+	REJECTED
+	UNRESOLVED
+)
+
+type Promise struct {
+	status PromiseStatus
+	value  interface{}
+	reason interface{}
+}
+
+func (p *Promise) resolveFunc(value interface{}) {
+	if p.status != UNRESOLVED {
+		return
+	}
+	p.value = value
+	p.status = FULFILLED
+}
+
+func (p *Promise) rejectFunc(reason interface{}) {
+	if p.status != UNRESOLVED {
+		return
+	}
+	p.reason = reason
+	p.status = REJECTED
+}
+
+func (p *Promise) Then() {
+
+}
+
+func NewPromise(executor InitialExecutor) Promise {
+	p := Promise{
+		status: UNRESOLVED,
+		value:  nil,
+		reason: nil,
+	}
+	executor(p.resolveFunc, p.rejectFunc)
+
+	return p
+}
+
+// func main() {
+// 	callPromise(func(resolve ResolveCall, reject RejectCall) {
+
+// 	})
+// }

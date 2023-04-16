@@ -6,4 +6,5 @@ var Dirs = []string{
 	"F:/marvals",
 	"F:/themovies",
 	"E:/movies",
+	"E:/photos",
 }
