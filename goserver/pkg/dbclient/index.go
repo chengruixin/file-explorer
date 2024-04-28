@@ -7,7 +7,6 @@ import (
 	"log"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,7 +16,7 @@ var (
 	DB         *sql.DB
 	DB_NAME    = "rax_video"
 	TABLE_NAME = "video_list"
-	INSERT_SQL = "INSERT INTO " + TABLE_NAME + "(id, file_path, file_name, creation_time, size, extra, ext_name) VALUES "
+	INSERT_SQL = "INSERT INTO " + TABLE_NAME + "(file_path, file_name, creation_time, size, extra, ext_name) VALUES "
 )
 
 // +---------------+------------------+------+-----+---------+----------------+
@@ -94,44 +93,74 @@ func SearchVideos(patterns []string, pageNo int, pageSize int) ([]*files.FileInf
 	return videoInfoCollection, total
 }
 
-func UpdateVideosHard(fileInfos []*files.FileInfo) error {
-	syncLoc := new(sync.WaitGroup)
-	fmt.Println("call1")
-	syncLoc.Add(1)
-	go func() {
-		DB.Query("DELETE FROM " + TABLE_NAME)
-		syncLoc.Done()
-	}()
+// func InsertTest() {
+// 	fPath, fName, extname, createTime, size, extra := "adf", "afile name", "ext .and", int64(123233), int64(12312312), "ewxtad"
 
-	// construct VALUES
-	valueStrs := []string{}
-	for _, fileInfo := range fileInfos {
-		str := buildFileInfoInsertionValue(fileInfo)
-		valueStrs = append(valueStrs, str)
+// 	str := buildFileInfoInsertionValue(&files.FileInfo{
+// 		FilePath:     &fPath,
+// 		FileName:     &fName,
+// 		ExtName:      &extname,
+// 		CreationTime: &createTime,
+// 		Size:         &size,
+// 		Extra:        &extra,
+// 	})
+
+// 	_, err := DB.Query(INSERT_SQL + str)
+
+// 	if err != nil {
+// 		fmt.Println("err in inserting", err.Error())
+// 	} else {
+// 		fmt.Println("success in inserting")
+
+// 	}
+// }
+func buildInsertStmtList(fileInfos []*files.FileInfo) []string {
+	res := make([]string, len(fileInfos))
+	for i, fileInfo := range fileInfos {
+		res[i] = buildFileInfoInsertionValue(fileInfo)
 	}
-	leftStrs := valueStrs[:len(valueStrs)/2]
-	rightStrs := valueStrs[len(valueStrs)/2:]
-	leftJoin := strings.Join(leftStrs, ", ")
-	rightJoin := strings.Join(rightStrs, ", ")
+	return res
+}
 
-	queryFunc := func(str string) {
-		fmt.Println("inserting")
-		_, err := DB.Query(INSERT_SQL + str)
+const SLICED_LENGTH = 5000
+
+func UpdateVideosHard(fileInfos []*files.FileInfo) {
+	_, err := DB.Query("DELETE FROM " + TABLE_NAME)
+
+	if err != nil {
+		fmt.Println("error in deleting table", err.Error())
+		return
+	}
+	insertStmtList := buildInsertStmtList(fileInfos)
+
+	fmt.Println("total len", len(insertStmtList))
+
+	iterations := len(insertStmtList) / SLICED_LENGTH
+
+	if len(insertStmtList)%SLICED_LENGTH > 0 {
+		iterations++
+	}
+
+	for i := 0; i < iterations; i++ {
+		var sliceStmtList []string
+		if i < iterations-1 {
+			sliceStmtList = insertStmtList[i*SLICED_LENGTH : (i+1)*SLICED_LENGTH]
+			fmt.Println("slice len", len(sliceStmtList), " from ", i*SLICED_LENGTH, " to ", (i+1)*SLICED_LENGTH)
+		} else {
+			sliceStmtList = insertStmtList[i*SLICED_LENGTH:]
+			fmt.Println("slice len", len(sliceStmtList), " from ", i*SLICED_LENGTH, " to end")
+		}
+
+		fmt.Println("inserting ", i)
+		insertStmtJoined := strings.Join(sliceStmtList, ", ")
+		_, err := DB.Query(INSERT_SQL + insertStmtJoined)
 
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Println("inserting failure", i, "\nwith error\n", err.Error())
+		} else {
+			fmt.Println("inserting success", i)
 		}
-		syncLoc.Done()
 	}
-
-	fmt.Println("call")
-	syncLoc.Add(2)
-	go queryFunc(leftJoin)
-	go queryFunc(rightJoin)
-	fmt.Println("return")
-
-	syncLoc.Wait()
-	return nil
 }
 
 func UpdateVideosSoft(fileInfos []*files.FileInfo) error {
