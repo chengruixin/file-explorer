@@ -6,4 +6,7 @@ var Dirs = []string{
 	"F:/marvals",
 	"F:/themovies",
 	"E:/movies",
+	"E:/movies2",
+	"E:/photos",
+	"L:/迅雷下载",
 }
